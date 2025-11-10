@@ -61,7 +61,7 @@ app.get('/gestion', (req, res) => {
 });
 
 // Ruta del Login
-app.get('/login', (req, res) => {
+app.get('/', (req, res) => {
     res.render('pages/login');
 });
 
@@ -90,7 +90,7 @@ app.get('/health', async (req, res) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 segundos máx
 
-        const response = await fetch('http://127.0.0.1:8081/api/health', { 
+        const response = await fetch('http://127.0.0.1:8081/api/status', { 
             method: 'GET',
             signal: controller.signal 
         });
