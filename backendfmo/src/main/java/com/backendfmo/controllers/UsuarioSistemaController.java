@@ -8,20 +8,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
 import com.backendfmo.models.UsuarioSistema;
-import com.backendfmo.services.IUsuarioSistemaService;
-import com.backendfmo.services.UsuarioSistemaServiceImpl;
+import com.backendfmo.services.usuarioSistema.IUsuarioSistemaService;
 
 import jakarta.validation.Valid;
 
 
 @RestController
-@RequestMapping("/api")
-public class Controller {
+public class UsuarioSistemaController {
 
     @Autowired
     private IUsuarioSistemaService service;
@@ -42,13 +39,12 @@ public class Controller {
         }
         
     }
-
    
     @PostMapping("/crearUsuarioSistema")
     public ResponseEntity<?> createUsuarioSistema(@Valid @RequestBody UsuarioSistema usuarioSistema) {
        try {
             service.saveUsuarioSistema(usuarioSistema);
-            URI location = service.createUri("{/id}", usuarioSistema);
+            URI location = service.createUri("/{id}", usuarioSistema);
             return (ResponseEntity<?>) ResponseEntity.created(location).build();
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
@@ -56,7 +52,7 @@ public class Controller {
     }
 
     @GetMapping("/usuarioSistema/{id}")
-    public ResponseEntity<?> findUsuarioSistemaById(@PathVariable Integer id){
+    public ResponseEntity<?> findUsuarioSistemaById(@Valid @PathVariable Integer id){
         try {
             return ResponseEntity.ok(service.findUsuarioSistemaById(id));
         } catch (Exception e) {

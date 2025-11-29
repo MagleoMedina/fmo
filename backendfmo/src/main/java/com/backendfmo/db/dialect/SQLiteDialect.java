@@ -92,6 +92,7 @@ import static org.hibernate.type.descriptor.DateTimeUtils.appendAsTimestampWithN
  *
  * @author Christian Beikov
  */
+@SuppressWarnings("deprecation")
 public class SQLiteDialect extends Dialect {
 
 	private static final DatabaseVersion DEFAULT_VERSION = DatabaseVersion.make( 2, 0 );
@@ -186,7 +187,7 @@ public class SQLiteDialect extends Dialect {
 	}
 
 	@Override
-	public String timestampaddPattern(TemporalUnit unit, TemporalType temporalType, IntervalType intervalType) {
+	public String timestampaddPattern(TemporalUnit unit, TemporalType temporalType, @SuppressWarnings("removal") IntervalType intervalType) {
 		final String function = temporalType == TemporalType.DATE ? "date" : "datetime";
 		switch ( unit ) {
 			case NANOSECOND:
@@ -376,7 +377,7 @@ public class SQLiteDialect extends Dialect {
 	}
 
 	@Override
-	public LockingClauseStrategy getLockingClauseStrategy(QuerySpec querySpec, LockOptions lockOptions) {
+	public LockingClauseStrategy getLockingClauseStrategy(QuerySpec querySpec, @SuppressWarnings("removal") LockOptions lockOptions) {
 		// SQLite does not support the FOR UPDATE clause
 		return NON_CLAUSE_STRATEGY;
 	}
@@ -420,9 +421,13 @@ public class SQLiteDialect extends Dialect {
 	private static final int SQLITE_BUSY = 5;
 	private static final int SQLITE_LOCKED = 6;
 	private static final int SQLITE_IOERR = 10;
+	@SuppressWarnings("unused")
 	private static final int SQLITE_CORRUPT = 11;
+	@SuppressWarnings("unused")
 	private static final int SQLITE_NOTFOUND = 12;
+	@SuppressWarnings("unused")
 	private static final int SQLITE_FULL = 13;
+	@SuppressWarnings("unused")
 	private static final int SQLITE_CANTOPEN = 14;
 	private static final int SQLITE_PROTOCOL = 15;
 	private static final int SQLITE_TOOBIG = 18;

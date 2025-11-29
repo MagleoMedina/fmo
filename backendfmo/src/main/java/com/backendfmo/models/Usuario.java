@@ -1,5 +1,6 @@
 package com.backendfmo.models;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,24 +13,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
-@Table(name = "usuario_sistema")
-
-public class UsuarioSistema {
+@Table(name = "usuario")
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "username",unique = true)
-    private String username;
+    @Column(name = "usuario")
+    private String usuario;
 
     @Column(name = "clave")
     private String clave;
 
-    @Column(name = "tipo")
-    private String tipo;   
+    @Column(name = "ficha")
+    private Integer ficha;
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @Column(name = "extension")
+    private String extension;
+
+    @Column(name = "gerencia")
+    private String gerencia;
+
 }
