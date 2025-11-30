@@ -15,7 +15,7 @@ import com.backendfmo.models.Usuario;
 import com.backendfmo.repository.UsuarioRepository;
 
 @Service
-public class MegaRegistroService {
+public class a {
 
     @Autowired
     private UsuarioRepository usuarioRepository;

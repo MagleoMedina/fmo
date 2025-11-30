@@ -20,6 +20,6 @@ public class EncabezadoReciboController {
 
     @PostMapping("/ingreso-equipo")
     public ResponseEntity<Usuario> crearIngreso(@Valid @RequestBody RegistroTotalDTO dto) {
-        return ResponseEntity.ok(service.guardarTodoDeUnaVez(dto));
+        return ResponseEntity.ok(service.guardarTodo(dto));
     }
 }
