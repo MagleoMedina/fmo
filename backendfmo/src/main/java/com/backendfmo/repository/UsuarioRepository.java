@@ -6,7 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.backendfmo.models.Usuario;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {}
 
-    
-}

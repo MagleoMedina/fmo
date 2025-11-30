@@ -15,14 +15,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
 @Table(name = "usuario")
 public class Usuario {
@@ -53,7 +51,7 @@ public class Usuario {
     // mappedBy = "usuarioRelacion": Debe coincidir con el nombre del atributo en la clase hija
     @OneToMany(mappedBy = "usuarioRelacion", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private final List<EncabezadoRecibo> recibos = new ArrayList<>();
+    private List<EncabezadoRecibo> recibos = new ArrayList<>();
 
     // Método helper para vincular
     public void agregarRecibo(EncabezadoRecibo recibo) {

@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class RegistroCompletoDTO {
+public class RegistroTotalDTO {
 
     // Datos del Usuario
     private String usuario;
@@ -16,7 +16,7 @@ public class RegistroCompletoDTO {
     private String gerencia;
     
     // Lista de Recibos a insertar
-    private List<ReciboDTO> recibos;
+    private List<EncabezadoDTO> recibos;
 }
 
 

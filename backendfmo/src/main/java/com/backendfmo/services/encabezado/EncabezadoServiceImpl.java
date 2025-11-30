@@ -4,20 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backendfmo.dtos.ReciboDTO;
-import com.backendfmo.dtos.RegistroCompletoDTO;
+import com.backendfmo.dtos.EncabezadoDTO;
+import com.backendfmo.dtos.RegistroTotalDTO;
 import com.backendfmo.models.EncabezadoRecibo;
 import com.backendfmo.models.Usuario;
 import com.backendfmo.repository.UsuarioRepository;
 
 @Service
-public class GestionService {
+public class EncabezadoServiceImpl implements IEncabezadoReciboService {
 
     @Autowired
     private UsuarioRepository usuarioRepository; 
 
     @Transactional
-    public Usuario guardarUsuarioYRecibos(RegistroCompletoDTO dto) {
+    public Usuario guardarUsuarioYRecibos(RegistroTotalDTO dto) {
         // 1. Llenar datos del Usuario
         Usuario nuevoUsuario = new Usuario();
         nuevoUsuario.setUsuario(dto.getUsuario());
@@ -29,7 +29,7 @@ public class GestionService {
 
         // 2. Llenar y vincular los Recibos
         if (dto.getRecibos() != null) {
-            for (ReciboDTO reciboDto : dto.getRecibos()) {
+            for (EncabezadoDTO reciboDto : dto.getRecibos()) {
                 EncabezadoRecibo recibo = new EncabezadoRecibo();
                 
                 recibo.setFmoEquipo(reciboDto.getFmoEquipo());

@@ -1,7 +1,12 @@
 package com.backendfmo.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,9 +15,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,7 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "encabezado_recibo")  
-@Builder
 
 public class EncabezadoRecibo {
 
@@ -66,4 +70,15 @@ public class EncabezadoRecibo {
     @JoinColumn(name = "usuario") 
     @JsonBackReference
     private Usuario usuarioRelacion;
+
+    // Relación hacia abajo (hacia los equipos/detalles)
+    @OneToMany(mappedBy = "encabezadoRelacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ReciboDeEquipos> listaEquipos = new ArrayList<>();
+
+    // Método helper
+    public void agregarEquipo(ReciboDeEquipos equipo) {
+        listaEquipos.add(equipo);
+        equipo.setEncabezadoRelacion(this);
+    }
 }
