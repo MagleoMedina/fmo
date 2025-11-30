@@ -1,11 +1,16 @@
 package com.backendfmo.models;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,5 +46,16 @@ public class Usuario {
 
     @Column(name = "gerencia")
     private String gerencia;
+
+    // Relación 1 a N
+    // mappedBy = "usuarioRelacion": Debe coincidir con el nombre del atributo en la clase hija
+    @OneToMany(mappedBy = "usuarioRelacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EncabezadoRecibo> recibos = new ArrayList<>();
+
+    // Método helper para vincular
+    public void agregarRecibo(EncabezadoRecibo recibo) {
+        recibos.add(recibo);
+        recibo.setUsuarioRelacion(this);
+    }
 
 }

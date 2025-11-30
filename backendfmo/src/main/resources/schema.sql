@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS serial_recibo (
 	recibo_de_equipos INTEGER,
 	serial_componentes INTEGER,
 	FOREIGN KEY(recibo_de_equipos) REFERENCES recibo_de_equipos(id) ON UPDATE CASCADE,
-	FOREIGN KEY(serial_componentes)REFERENCES Serial_componentes(id) ON UPDATE CASCADE
+	FOREIGN KEY(serial_componentes)REFERENCES serial_componentes(id) ON UPDATE CASCADE
 
 );
 CREATE TABLE IF NOT EXISTS usuario (
