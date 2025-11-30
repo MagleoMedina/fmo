@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="test.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2637"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Actividad" custom_title="0" dock_id="1" table="4,9:mainActividad"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000015600ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1*">BEGIN TRANSACTION;
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="" readonly="0" foreign_keys="" case_sensitive_like="" temp_store="" wal_autocheckpoint="" synchronous=""/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2637"/><column_width id="4" width="0"/></tab_structure><tab_browse><table title="." custom_title="0" dock_id="6" table="0,0:"/><dock_state state="000000ff00000000fd00000001000000020000054a0000024efc0100000003fc000000000000054a0000000000fffffffa000000000100000004fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f007700730065003501000000000000054a0000000000000000fb000000160064006f0063006b00420072006f007700730065003601000000000000054a0000015600ffffff000002cd0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">BEGIN TRANSACTION;
 
 -- Create SPRING_SESSION table
 CREATE TABLE SPRING_SESSION (
@@ -25,23 +25,6 @@ CREATE TABLE SPRING_SESSION_ATTRIBUTES (
     CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION(PRIMARY_ID) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Actividad (
-	ID INTEGER PRIMARY KEY AUTOINCREMENT,
-	Nombre_de_actividad TEXT
-
-);
-CREATE TABLE IF NOT EXISTS Carpeta_de_red (
-	ID INTEGER PRIMARY KEY AUTOINCREMENT,
-	Nombre_carpeta Text 
-);
-CREATE TABLE IF NOT EXISTS Carpeta_red_recibo (
-	ID INTEGER PRIMARY KEY AUTOINCREMENT,
-	Recibo_de_equipos INTEGER,
-	Carpeta_de_red INTEGER,
-	FOREIGN KEY(Recibo_de_equipos) REFERENCES Recibo_de_equipos(ID) ON UPDATE CASCADE,
-	FOREIGN KEY(Carpeta_de_red)REFERENCES Carpeta_de_red(ID) ON UPDATE CASCADE
-
-);
 CREATE TABLE IF NOT EXISTS actividad (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	nombre_de_actividad TEXT
@@ -149,4 +132,4 @@ CREATE TABLE IF NOT EXISTS usuario_sistema (
 );
 
 COMMIT;
-</sql><sql name="&amp;Foreign-Key Check*">PRAGMA foreign_key_check;</sql><current_tab id="1"/></tab_sql></sqlb_project>
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
