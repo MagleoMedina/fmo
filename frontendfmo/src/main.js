@@ -38,7 +38,7 @@ function createWindow() {
         mainWindow.setMenu(null);
     }
 }
-
+//app.disableHardwareAcceleration();
 // Inicialización de Electron
 app.whenReady().then(() => {
     createWindow();
