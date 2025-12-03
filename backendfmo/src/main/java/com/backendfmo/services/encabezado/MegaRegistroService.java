@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backendfmo.dtos.ComponenteDetalleDTO;
-import com.backendfmo.dtos.EncabezadoDTO;
-import com.backendfmo.dtos.EquipoDTO;
-import com.backendfmo.dtos.RegistroTotalDTO;
-import com.backendfmo.dtos.SerialDetalleDTO;
+import com.backendfmo.dtos.request.reciboequipos.ComponenteDetalleDTO;
+import com.backendfmo.dtos.request.reciboequipos.EncabezadoDTO;
+import com.backendfmo.dtos.request.reciboequipos.EquipoDTO;
+import com.backendfmo.dtos.request.reciboequipos.RegistroTotalDTO;
+import com.backendfmo.dtos.request.reciboequipos.SerialDetalleDTO;
 import com.backendfmo.models.CarpetaDeRed;
 import com.backendfmo.models.CarpetaRedRecibo;
 import com.backendfmo.models.ComponenteInterno;

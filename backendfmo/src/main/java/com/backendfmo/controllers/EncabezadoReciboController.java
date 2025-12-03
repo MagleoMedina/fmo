@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backendfmo.dtos.RegistroTotalDTO;
+import com.backendfmo.dtos.request.reciboequipos.RegistroTotalDTO;
 import com.backendfmo.dtos.response.BusquedaCompletaDTO;
-import com.backendfmo.models.Usuario;
 import com.backendfmo.services.encabezado.ConsultaService;
 import com.backendfmo.services.encabezado.MegaRegistroService;
 
@@ -32,7 +30,6 @@ public class EncabezadoReciboController {
         return ResponseEntity.ok().body(dto);
     }
 
-    // GET /api/consultas/buscar?fmo=PC-GERENCIA-01
     @GetMapping("/buscar/{fmo}")
     public ResponseEntity<?> obtenerDatosPorFmo(@Valid @PathVariable String fmo) {
         BusquedaCompletaDTO resultado = consultaService.buscarPorFmo(fmo);

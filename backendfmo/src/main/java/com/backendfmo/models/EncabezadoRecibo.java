@@ -81,4 +81,15 @@ public class EncabezadoRecibo {
         listaEquipos.add(equipo);
         equipo.setEncabezadoRelacion(this);
     }
+
+    // Relación exclusiva para Periféricos
+    @OneToMany(mappedBy = "encabezadoRelacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ReciboDePerifericos> perifericos = new ArrayList<>();
+
+    // Helper method
+    public void agregarPeriferico(ReciboDePerifericos periferico) {
+        perifericos.add(periferico);
+        periferico.setEncabezadoRelacion(this);
+    }
 }
