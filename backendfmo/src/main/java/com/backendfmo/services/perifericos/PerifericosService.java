@@ -6,11 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backendfmo.dtos.request.reciboperifericos.PerifericoItemDTO;
 import com.backendfmo.dtos.request.reciboperifericos.RegistroPerifericosDTO;
+import com.backendfmo.dtos.response.BusquedaPerifericoDTO;
 import com.backendfmo.models.ComponenteInterno;
 import com.backendfmo.models.EncabezadoRecibo;
 import com.backendfmo.models.ReciboDePerifericos;
 import com.backendfmo.models.Usuario;
 import com.backendfmo.repository.ComponenteInternoRepository;
+import com.backendfmo.repository.ReciboDePerifericosRepository;
 import com.backendfmo.repository.UsuarioRepository;
 
 @Service
@@ -36,6 +38,10 @@ public class PerifericosService {
         EncabezadoRecibo encabezado = new EncabezadoRecibo();
         encabezado.setFmoEquipo(dto.getFmoEquipo());
         encabezado.setSolicitudST(dto.getSolicitudST());
+       // encabezado.setSolicitudDAET(dto.getSolicitudDAET());
+       // encabezado.setEntregadoPor(dto.getEntregadoPor());
+        //encabezado.setRecibidoPor(dto.getRecibidoPor());
+       // encabezado.setAsignadoA(dto.getAsignadoA());
         encabezado.setEstatus(dto.getEstatus());
         encabezado.setFecha(dto.getFecha());
         encabezado.setObservacion(dto.getObservacion());
@@ -64,4 +70,40 @@ public class PerifericosService {
         // 5. GUARDAR (Cascada: Usuario -> Encabezado -> Perifericos)
         return usuarioRepository.save(nuevoUsuario);
     }
+
+    @Autowired
+private ReciboDePerifericosRepository perifericoRepository;
+
+@Transactional(readOnly = true) // Optimiza la velocidad de lectura
+public BusquedaPerifericoDTO buscarPorSerial(String serial) {
+    
+    // 1. Buscamos el registro específico en la tabla recibo_de_perifericos
+    ReciboDePerifericos periferico = perifericoRepository.findByFmoSerial(serial)
+            .orElseThrow(() -> new RuntimeException("No se encontró ningún periférico con el Serial: " + serial));
+
+    // 2. Extraemos las entidades relacionadas (Navegación hacia arriba)
+    EncabezadoRecibo encabezado = periferico.getEncabezadoRelacion();
+    Usuario usuario = encabezado.getUsuarioRelacion();
+
+    // 3. Mapeamos a DTO (Llenamos el objeto de respuesta)
+    BusquedaPerifericoDTO respuesta = new BusquedaPerifericoDTO();
+
+    // Datos del ítem
+    respuesta.setFmoSerial(periferico.getFmoSerial());
+    respuesta.setTipoComponente(periferico.getComponenteRef().getNombre()); // Join con tabla componentes
+
+    // Datos del Encabezado
+    respuesta.setFmoEquipoLote(encabezado.getFmoEquipo());
+    respuesta.setSolicitudST(encabezado.getSolicitudST());
+    respuesta.setEstatus(encabezado.getEstatus());
+    respuesta.setFecha(encabezado.getFecha());
+    respuesta.setObservacion(encabezado.getObservacion());
+
+    // Datos del Usuario
+    respuesta.setUsuarioNombre(usuario.getNombre());
+    respuesta.setUsuarioFicha(String.valueOf(usuario.getFicha()));
+    respuesta.setUsuarioGerencia(usuario.getGerencia());
+
+    return respuesta;
+}
 }
