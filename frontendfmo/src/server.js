@@ -3,19 +3,44 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Configurar EJS como motor de plantillas
+// Configurar EJS
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Ruta principal
+// IMPORTANTE: Servir archivos estáticos (CSS, JS del cliente)
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// --- RUTAS DE NAVEGACIÓN (Renderizan el HTML) ---
+
+// 1. Inicio
 app.get('/', (req, res) => {
-    // Renderiza la vista index.ejs pasando una variable
-    res.render('index', { title: 'Hola Mundo desde EJS' });
+    res.render('pages/dashboard', { title: 'Inicio - FMO' });
 });
 
-// Iniciar el servidor
+// 2. Pantalla para ingresar Equipos (El formulario complejo)
+app.get('/ingreso-equipos', (req, res) => {
+    res.render('pages/ingreso-equipos', { title: 'Registro de Equipos' });
+});
+
+// 3. Pantalla para Periféricos sueltos
+app.get('/perifericos', (req, res) => {
+    res.render('pages/perifericos', { title: 'Gestión Periféricos' });
+});
+
+// 4. Pantalla para Entregas DAET
+app.get('/daet', (req, res) => {
+    res.render('pages/daet', { title: 'Entregas DAET' });
+});
+
+// 5. Pantalla de Búsquedas (Trazabilidad)
+app.get('/busqueda', (req, res) => {
+    res.render('pages/busqueda', { title: 'Búsqueda y Reportes' });
+});
+
+// Iniciar servidor
 const server = app.listen(PORT, () => {
-    console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
+    console.log(`Frontend Express corriendo en http://localhost:${PORT}`);
 });
 
 module.exports = server;

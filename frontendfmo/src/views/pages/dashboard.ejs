@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+    <title><%= title %></title>
+</head>
+<body>
+
+    <div class="wrapper">
+        
+        <%- include('../partials/sidebar') %>
+
+        <div id="content" class="w-100 bg-light">
+            
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm px-4">
+                <div class="container-fluid">
+                    <span class="navbar-brand mb-0 h1">Panel de Control</span>
+                </div>
+            </nav>
+
+            <div class="container-fluid p-4">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="alert alert-primary shadow-sm" role="alert">
+                            <h4 class="alert-heading">¡Bienvenido al Sistema de Gestión!</h4>
+                            <p>Desde aquí podrás controlar el ingreso, reparación y salida de equipos de la gerencia de telemática.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center">
+                                <h1 class="display-4 text-primary">📥</h1>
+                                <h5 class="card-title">Nuevo Ingreso</h5>
+                                <p class="card-text text-muted">Registrar la entrada de un equipo para reparación.</p>
+                                <a href="/ingreso-equipos" class="btn btn-outline-primary w-100">Ir a Registro</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center">
+                                <h1 class="display-4 text-success">🔍</h1>
+                                <h5 class="card-title">Consultar Estado</h5>
+                                <p class="card-text text-muted">Buscar equipos por FMO, Serial o Usuario.</p>
+                                <a href="/busqueda" class="btn btn-outline-success w-100">Buscar</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body text-center">
+                                <h1 class="display-4 text-warning">📊</h1>
+                                <h5 class="card-title">Reportes</h5>
+                                <p class="card-text text-muted">Ver estadísticas de equipos ingresados y reparados.</p>
+                                <a href="#" class="btn btn-outline-warning w-100">Ver Reportes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+</body>
+</html>

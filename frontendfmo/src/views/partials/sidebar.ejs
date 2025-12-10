@@ -1,0 +1,44 @@
+<div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4 fw-bold">🛠️ Soporte FMO</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a href="/" class="nav-link text-white <%= title === 'Inicio - FMO' ? 'active' : '' %>">
+                🏠 Inicio
+            </a>
+        </li>
+        <li>
+            <a href="/ingreso-equipos" class="nav-link text-white <%= title === 'Registro de Equipos' ? 'active' : '' %>">
+                📥 Recepción Equipos
+            </a>
+        </li>
+        <li>
+            <a href="/perifericos" class="nav-link text-white <%= title === 'Gestión Periféricos' ? 'active' : '' %>">
+                ⌨️ Reg. Periféricos
+            </a>
+        </li>
+        <li>
+            <a href="/daet" class="nav-link text-white <%= title === 'Entregas DAET' ? 'active' : '' %>">
+                🚚 Envíos DAET
+            </a>
+        </li>
+        <li>
+            <a href="/busqueda" class="nav-link text-white <%= title === 'Búsqueda y Reportes' ? 'active' : '' %>">
+                🔍 Consultar / Buscar
+            </a>
+        </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <strong>👤 Usuario: Admin</strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="#">Perfil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+        </ul>
+    </div>
+</div>
