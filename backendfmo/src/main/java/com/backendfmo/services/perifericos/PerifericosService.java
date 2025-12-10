@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backendfmo.dtos.request.reciboperifericos.PerifericoItemDTO;
 import com.backendfmo.dtos.request.reciboperifericos.RegistroPerifericosDTO;
-import com.backendfmo.dtos.response.ReciboPerifericosDTO;
+import com.backendfmo.dtos.response.reciboperifericos.ReciboPerifericosDTO;
 import com.backendfmo.models.ComponenteInterno;
 import com.backendfmo.models.EncabezadoRecibo;
 import com.backendfmo.models.ReciboDePerifericos;

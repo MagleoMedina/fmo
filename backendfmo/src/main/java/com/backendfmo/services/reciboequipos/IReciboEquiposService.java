@@ -1,7 +1,7 @@
 package com.backendfmo.services.reciboequipos;
 
 import com.backendfmo.dtos.request.reciboequipos.RegistroTotalDTO;
-import com.backendfmo.dtos.response.BusquedaCompletaDTO;
+import com.backendfmo.dtos.response.reciboequipos.BusquedaCompletaDTO;
 import com.backendfmo.models.Usuario;
 
 public interface IReciboEquiposService {

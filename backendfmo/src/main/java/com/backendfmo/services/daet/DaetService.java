@@ -1,5 +1,8 @@
 package com.backendfmo.services.daet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.backendfmo.dtos.request.entregasdaet.ComponenteDaetDTO;
 import com.backendfmo.dtos.request.entregasdaet.EntregaItemDTO;
 import com.backendfmo.dtos.request.entregasdaet.RegistroDaetDTO;
+import com.backendfmo.dtos.response.entregasdaet.BusquedaDaetDTO;
+import com.backendfmo.dtos.response.entregasdaet.ComponenteInternoResumenDTO;
 import com.backendfmo.models.ComponenteInterno;
 import com.backendfmo.models.ComponenteInternoCpuDaet;
 import com.backendfmo.models.EncabezadoRecibo;
@@ -14,6 +19,7 @@ import com.backendfmo.models.EntregasAlDAET;
 import com.backendfmo.models.Periferico;
 import com.backendfmo.models.Usuario;
 import com.backendfmo.repository.ComponenteInternoRepository;
+import com.backendfmo.repository.EntregasAlDAETRepository;
 import com.backendfmo.repository.PerifericoRepository;
 import com.backendfmo.repository.UsuarioRepository;
 
@@ -27,6 +33,8 @@ public class DaetService {
     private PerifericoRepository perifericoRepository; // Para buscar "CPU", "Impresora"
     @Autowired
     private ComponenteInternoRepository componenteRepository; // Para buscar "RAM", "Disco"
+    @Autowired
+    private EntregasAlDAETRepository entregasRepository;
 
     @Transactional
     public Usuario registrarEntregasDaet(RegistroDaetDTO dto) {
@@ -88,4 +96,58 @@ public class DaetService {
         nuevoUsuario.agregarRecibo(encabezado);
         return usuarioRepository.save(nuevoUsuario);
     }
+
+
+
+@Transactional(readOnly = true)
+public List<BusquedaDaetDTO> buscarPorSerialDaet(String serial) {
+    
+    // 1. Buscar en BD (Ahora recibimos una lista)
+    List<EntregasAlDAET> entregasEncontradas = entregasRepository.findByFmoSerial(serial);
+
+    // Validación opcional: Si la lista está vacía, lanzamos error o devolvemos lista vacía
+    if (entregasEncontradas.isEmpty()) {
+        throw new RuntimeException("No se encontraron registros con el Serial: " + serial);
+    }
+
+    // 2. Preparamos la lista de respuesta
+    List<BusquedaDaetDTO> listaRespuesta = new ArrayList<>();
+
+    // 3. Iteramos sobre cada registro encontrado para convertirlo a DTO
+    for (EntregasAlDAET entrega : entregasEncontradas) {
+        BusquedaDaetDTO dto = new BusquedaDaetDTO();
+
+        // --- Mapeo Datos Entrega ---
+        dto.setFmoSerial(entrega.getFmoSerial());
+        dto.setActividad(entrega.getActividad());
+        dto.setEstado(entrega.getEstado());
+        dto.setIdentifique(entrega.getIdentifique());
+        dto.setTipoPeriferico(entrega.getPerifericoRef().getNombre());
+
+        // --- Mapeo Datos Encabezado ---
+        EncabezadoRecibo encabezado = entrega.getEncabezadoRelacion();
+        dto.setFmoEquipoLote(encabezado.getFmoEquipo());
+        dto.setSolicitudDAET(encabezado.getSolicitudDAET());
+        dto.setEstatusEncabezado(encabezado.getEstatus());
+        dto.setFecha(encabezado.getFecha());
+        dto.setObservacion(encabezado.getObservacion());
+
+        // --- Mapeo Componentes Internos ---
+        List<ComponenteInternoResumenDTO> listaComponentes = new ArrayList<>();
+        if (entrega.getComponentesInternos() != null) {
+            for (ComponenteInternoCpuDaet comp : entrega.getComponentesInternos()) {
+                ComponenteInternoResumenDTO dtoComp = new ComponenteInternoResumenDTO();
+                dtoComp.setCantidad(comp.getCantidad());
+                dtoComp.setNombreComponente(comp.getComponenteRef().getNombre());
+                listaComponentes.add(dtoComp);
+            }
+        }
+        dto.setComponentesInternos(listaComponentes);
+
+        // Agregamos el DTO ya lleno a la lista final
+        listaRespuesta.add(dto);
+    }
+
+    return listaRespuesta;
+}
 }

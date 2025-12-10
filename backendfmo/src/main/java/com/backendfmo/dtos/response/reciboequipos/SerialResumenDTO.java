@@ -1,4 +1,4 @@
-package com.backendfmo.dtos.response;
+package com.backendfmo.dtos.response.reciboequipos;
 
 
 import lombok.AllArgsConstructor;
