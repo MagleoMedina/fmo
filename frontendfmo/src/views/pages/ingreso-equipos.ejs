@@ -324,9 +324,11 @@
         </div>
     </div>
 
-    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/src/public/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/src/public/js/api.js"></script>
     
     <script>
+        import ApiService from '/src/public/js/api.js';
         async function guardarRecibo() {
             // ... (Recolección de datos de Usuario y Encabezado igual que antes) ...
             const usuarioData = {
@@ -437,7 +439,12 @@
 
             // Enviar (Igual que antes)
             try {
-                // ... fetch ...
+                // Llamada limpia:
+                
+                const resultado = await ApiService.ingresos.crear(payload);
+                
+                alert("¡Recibo Guardado Correctamente! ID Usuario: " + resultado.id);
+                window.location.reload();
             } catch (e) { console.error(e); }
         }
     </script>
