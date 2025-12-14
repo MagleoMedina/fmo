@@ -3,14 +3,353 @@
 <head>
     <%- include('../partials/head') %>
     <title><%= title %></title>
+    <style>
+        /* REUTILIZAMOS EL ESTILO "PAPER" COMPACTO */
+        .paper-form {
+            background-color: #fff;
+            border: 2px solid #000;
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            max-width: 700px; /* Es un recibo más angosto según la foto */
+            margin: 0 auto;
+        }
+        
+        .cell-border {
+            border: 1px solid #000;
+            padding: 2px 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .cell-block { display: block; }
+
+        .input-line {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-weight: bold;
+            color: #000080;
+            height: 20px;
+            font-size: 13px;
+            padding: 0 5px;
+        }
+        .input-line:focus { outline: none; }
+
+        .label-text {
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* Ajustes específicos para este formulario */
+        .form-check-input {
+            border: 1px solid #000;
+            width: 14px;
+            height: 14px;
+            margin-top: 2px;
+            margin-right: 5px;
+        }
+        
+        .row-compact { --bs-gutter-x: 0; }
+        
+        /* Para alinear el título con el icono */
+        .header-title {
+            letter-spacing: 2px;
+            font-weight: 900;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
     <div class="wrapper">
-        
         <%- include('../partials/sidebar') %>
-       <h1>Entregas al daet</h1>
 
-    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+        <div id="content" class="w-100 bg-light p-2" style="overflow-y: auto;">
+            
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="text-dark m-0">🚚 Envíos al DAET</h5>
+                    <button class="btn btn-sm btn-primary" onclick="guardarEntregaDAET()">💾 Guardar Entrega</button>
+                </div>
+
+                <div class="paper-form container p-0" id="formDaet">
+                    
+                    <div class="row row-compact">
+                        <div class="col-12 text-center cell-border justify-content-between bg-light p-2">
+                            <div style="width: 30px;"></div> <span class="header-title">ENTREGAS AL DAET</span>
+                            <span style="font-size: 20px;">📦</span> </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FECHA:</span>
+                            <input type="date" class="input-line" id="fecha" style="max-width: 150px;">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">SOLICITUD DAET.:</span>
+                            <input type="text" class="input-line" id="solicitudDAET">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">SOLICITUD S.T.:</span>
+                            <input type="text" class="input-line" id="solicitudST">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">ANALISTA:</span>
+                            <input type="text" class="input-line" id="analista" placeholder="Usuario Actual">
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border justify-content-center bg-light">
+                            <span class="label-text">ACTIVIDAD:</span>
+                        </div>
+                        <div class="col-12 cell-border justify-content-center">
+                            <div class="form-check form-check-inline me-5">
+                                <input class="form-check-input" type="radio" name="actividad" id="actReemplazo" value="Reemplazo">
+                                <label class="label-text" for="actReemplazo">REEMPLAZO</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="actividad" id="actEntrega" value="Entrega" checked>
+                                <label class="label-text" for="actEntrega">ENTREGA</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-3">ESTADO:</span>
+                            <div class="form-check form-check-inline me-4">
+                                <input class="form-check-input" type="radio" name="estado" id="estBueno" value="Bueno" checked>
+                                <label class="label-text" for="estBueno">BUENO</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="estado" id="estDanado" value="Dañado">
+                                <label class="label-text" for="estDanado">DAÑADO</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">EQUIPO:</span>
+                            <input type="text" class="input-line" id="nombreEquipo" placeholder="Ej: CPU Torre / Laptop">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">COMPONENTES:</span>
+                            <input type="text" class="input-line" id="componentesTexto">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">PERIFÉRICOS:</span>
+                            <input type="text" class="input-line" id="perifericosTexto">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FMO/SERIAL:</span>
+                            <input type="text" class="input-line" id="fmoSerial">
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border bg-light">
+                            <span class="label-text">ENTREGA DE CPU:</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row row-compact">
+                        <div class="col-6 cell-border cell-block">
+                            <div class="form-check mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkDisco" value="Disco Duro">
+                                <label class="label-text" for="chkDisco">DISCO DURO</label>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkRam" value="Memoria RAM">
+                                <label class="label-text me-1" for="chkRam">MEMORIAS RAM</label>
+                                <span style="font-size:10px;">----</span>
+                                <span class="label-text ms-1 me-1">CANT:</span>
+                                <input type="number" class="input-line text-center" id="cantRam" value="1" style="width: 40px; height: 20px;">
+                            </div>
+
+                            <div class="form-check mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkMadre" value="Tarjeta Madre">
+                                <label class="label-text" for="chkMadre">TARJETA MADRE</label>
+                            </div>
+                            <div class="form-check mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkProc" value="Procesador">
+                                <label class="label-text" for="chkProc">PROCESADOR</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkFan" value="Fan Cooler">
+                                <label class="label-text" for="chkFan">FAN COOLER</label>
+                            </div>
+                        </div>
+
+                        <div class="col-6 cell-border cell-block">
+                            <div class="form-check mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkVideo" value="Tarjeta de Video">
+                                <label class="label-text" for="chkVideo">TARJETA DE VIDEO</label>
+                            </div>
+                            
+                            <div class="form-check mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkFuente" value="Fuente de Poder">
+                                <label class="label-text" for="chkFuente">FUENTE DE PODER</label>
+                            </div>
+
+                            <div class="form-check mb-1">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkPila" value="Pila">
+                                <label class="label-text" for="chkPila">PILA</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input daet-check" type="checkbox" id="chkRed" value="Tarjeta de Red">
+                                <label class="label-text" for="chkRed">TARJETA DE RED</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border bg-light justify-content-center">
+                            <span class="label-text">SE RECIBE REEMPLAZO</span>
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border align-items-center">
+                            <div class="form-check form-check-inline ms-2">
+                                <input class="form-check-input" type="radio" name="reemplazo" id="reemplazoSi" value="Si">
+                                <label class="label-text" for="reemplazoSi">SI</label>
+                            </div>
+                            <div class="form-check form-check-inline me-4">
+                                <input class="form-check-input" type="radio" name="reemplazo" id="reemplazoNo" value="No" checked>
+                                <label class="label-text" for="reemplazoNo">NO</label>
+                            </div>
+                            
+                            <span class="label-text me-2 border-start border-dark ps-2">IDENTIFIQUE:</span>
+                            <input type="text" class="input-line" id="identifiqueReemplazo">
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border cell-block">
+                            <span class="label-text">(OBSERVACIÓN):</span>
+                            <textarea class="input-line" rows="2" id="observacion" style="resize: none;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-8 cell-border" style="height: 50px;">
+                            <span class="label-text">RECIBIDO POR:</span>
+                            <input type="text" class="input-line mt-3" id="recibidoPor">
+                        </div>
+                        <div class="col-4 cell-border" style="height: 50px;">
+                            <span class="label-text">FICHA:</span>
+                            <input type="text" class="input-line mt-3" id="fichaRecibido">
+                        </div>
+                    </div>
+
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Setear fecha actual por defecto
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        async function guardarEntregaDAET() {
+            // 1. Recolección de Componentes Internos (CPU)
+            const componentesInternos = [];
+            
+            // Lógica específica para RAM (que tiene cantidad)
+            if(document.getElementById('chkRam').checked) {
+                componentesInternos.push({
+                    idComponente: 1, // ID Ficticio de RAM en tu BD
+                    cantidad: parseInt(document.getElementById('cantRam').value) || 1
+                });
+            }
+
+            // Lógica para el resto de checkboxes
+            const otrosChecks = document.querySelectorAll('.daet-check:checked:not(#chkRam)');
+            otrosChecks.forEach((chk, index) => {
+                componentesInternos.push({
+                    idComponente: index + 5, // IDs ficticios (ajustar a tu BD real)
+                    cantidad: 1
+                });
+            });
+
+            // 2. Construcción del JSON (RegistroDaetDTO)
+            // NOTA: Como el formulario físico es "plano" pero el backend espera una estructura jerárquica,
+            // mapeamos los campos visuales a la estructura del DTO.
+            
+            const payload = {
+                // Datos Usuario (Quemados o tomados del analista)
+                usuario: document.getElementById('analista').value.toLowerCase().replace(/\s/g, '.') || "admin.daet",
+                clave: "1234", // Temporal
+                ficha: 9999, // Temporal
+                nombre: document.getElementById('analista').value || "Analista TI",
+                gerencia: "Soporte Tecnico",
+
+                // Datos Encabezado (Padre)
+                fmoEquipo: "LOTE-" + document.getElementById('fmoSerial').value, // Generamos un código de lote
+                solicitudDAET: document.getElementById('solicitudDAET').value,
+                estatus: "Enviado DAET",
+                fecha: document.getElementById('fecha').value,
+                // Concatenamos observaciones con la info de reemplazo
+                observacion: document.getElementById('observacion').value + 
+                             " | Reemplazo: " + document.querySelector('input[name="reemplazo"]:checked').value + 
+                             " (" + document.getElementById('identifiqueReemplazo').value + ")",
+
+                // Lista de Entregas (Items)
+                entregas: [
+                    {
+                        // Asumimos que el "Equipo" principal es un CPU Torre (ID 1)
+                        // Si quisieras hacerlo dinámico, necesitarías un <select> invisible o lógica extra.
+                        idPeriferico: 1, 
+                        actividad: document.querySelector('input[name="actividad"]:checked').value,
+                        fmoSerial: document.getElementById('fmoSerial').value,
+                        estado: document.querySelector('input[name="estado"]:checked').value,
+                        
+                        // Lista de hijos (RAM, Disco, etc)
+                        componentesInternos: componentesInternos
+                    }
+                ]
+            };
+
+            console.log("Enviando DAET:", payload);
+
+            try {
+                const response = await fetch('http://localhost:8080/api/daet/entregas', { 
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+
+                if(response.ok) {
+                    alert("Entrega DAET registrada con éxito");
+                    window.location.reload();
+                } else {
+                    alert("Error en el servidor");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error de conexión");
+            }
+        }
+    </script>
 </body>
 </html>

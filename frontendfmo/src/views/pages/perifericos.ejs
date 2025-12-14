@@ -3,13 +3,315 @@
 <head>
     <%- include('../partials/head') %>
     <title><%= title %></title>
+    <style>
+        /* Estilos Base "Paper Form" */
+        .paper-form {
+            background-color: #fff;
+            border: 2px solid #000;
+            color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            max-width: 600px; /* Formato tipo media carta vertical */
+            margin: 0 auto;
+        }
+        
+        .cell-border {
+            border: 1px solid #000;
+            padding: 2px 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-line {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-weight: bold;
+            color: #000080;
+            height: 20px;
+            font-size: 13px;
+            padding: 0 5px;
+        }
+        .input-line:focus { outline: none; }
+
+        .label-text {
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        /* Ajuste de Checkboxes */
+        .form-check {
+            margin-bottom: 0;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .form-check-input {
+            border: 1px solid #000;
+            width: 14px;
+            height: 14px;
+            margin-top: 0;
+            margin-right: 5px;
+            border-radius: 0;
+        }
+        
+        .row-compact { --bs-gutter-x: 0; }
+    </style>
 </head>
 <body>
 
     <div class="wrapper">
         <%- include('../partials/sidebar') %>
-       <h1>recibo de perifericos</h1>
 
-    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+        <div id="content" class="w-100 bg-light p-2" style="overflow-y: auto;">
+            
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="text-dark m-0">⌨️ Recibo de Periféricos</h5>
+                    <button class="btn btn-sm btn-primary" onclick="guardarPerifericos()">💾 Guardar</button>
+                </div>
+
+                <div class="paper-form container p-0" id="formPerifericos">
+                    
+                    <div class="row row-compact">
+                        <div class="col-12 text-center cell-border justify-content-center bg-light p-2">
+                            <h6 class="m-0 fw-bold" style="letter-spacing: 1px;">RECIBO DE PERIFÉRICOS Y COMPONENTES</h6>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FECHA:</span>
+                            <input type="date" class="input-line" id="fecha" style="max-width: 150px;">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FICHA:</span>
+                            <input type="number" class="input-line" id="ficha">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">USUARIO:</span>
+                            <input type="text" class="input-line" id="usuario">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">EXT/TLF:</span>
+                            <input type="text" class="input-line" id="ext">
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkMonitor" value="Monitor">
+                                <label class="label-text" for="chkMonitor" style="font-size: 11px;">MONITOR</label>
+                            </div>
+                        </div>
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkTeclado" value="Teclado">
+                                <label class="label-text" for="chkTeclado" style="font-size: 11px;">TECLADO</label>
+                            </div>
+                        </div>
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkScaner" value="Scaner">
+                                <label class="label-text" for="chkScaner" style="font-size: 11px;">SCANER</label>
+                            </div>
+                        </div>
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkPendrives" value="Pendrive">
+                                <label class="label-text" for="chkPendrives" style="font-size: 11px;">PENDRIVES</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkRegulador" value="Regulador">
+                                <label class="label-text" for="chkRegulador" style="font-size: 11px;">REGULADOR</label>
+                            </div>
+                        </div>
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkImpresora" value="Impresora">
+                                <label class="label-text" for="chkImpresora" style="font-size: 11px;">IMPRESORA</label>
+                            </div>
+                        </div>
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkMouse" value="Mouse">
+                                <label class="label-text" for="chkMouse" style="font-size: 11px;">MOUSE</label>
+                            </div>
+                        </div>
+                        <div class="col-3 cell-border">
+                            <div class="form-check">
+                                <input class="form-check-input peri-check" type="checkbox" id="chkToner" value="Toner">
+                                <label class="label-text" for="chkToner" style="font-size: 11px;">TÓNER</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <div class="form-check p-0 m-0 w-100">
+                                <input class="form-check-input mt-1" type="checkbox" id="chkComponentes" disabled style="visibility: hidden;">
+                                <span class="label-text me-2">COMPONENTES:</span>
+                                <input type="text" class="input-line" id="componentesTxt">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <div class="form-check p-0 m-0 w-100">
+                                <span class="label-text me-2 ms-1">OTROS:</span>
+                                <input type="text" class="input-line" id="otrosTxt">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FMO/ SERIAL:</span>
+                            <input type="text" class="input-line" id="fmoSerial">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FMO ASIGNADO:</span>
+                            <input type="text" class="input-line" id="fmoAsignado">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">DPTO/GCIA:</span>
+                            <input type="text" class="input-line" id="gerencia">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">FALLA:</span>
+                            <input type="text" class="input-line" id="falla">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">ASIGNADO A:</span>
+                            <input type="text" class="input-line" id="asignadoA">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">N.º SOLICITUD S.T.:</span>
+                            <input type="text" class="input-line" id="solicitudST">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border">
+                            <span class="label-text me-2">N.º SOLICITUD DAET:</span>
+                            <input type="text" class="input-line" id="solicitudDaet"> 
+                        </div>
+                    </div>
+
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border" style="height: 45px;">
+                            <span class="label-text">ENTREGADO POR:</span>
+                            <input type="text" class="input-line mt-2" id="entregadoPor">
+                        </div>
+                    </div>
+                    <div class="row row-compact">
+                        <div class="col-12 cell-border" style="height: 45px;">
+                            <span class="label-text">RECIBIDO POR:</span>
+                            <input type="text" class="input-line mt-2" id="recibidoPor">
+                        </div>
+                    </div>
+
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        async function guardarPerifericos() {
+            const mapIds = {
+                'Monitor': 1, 'Teclado': 2, 'Scaner': 3, 'Pendrive': 4,
+                'Regulador': 5, 'Impresora': 6, 'Mouse': 7, 'Toner': 8, 'Otros': 9
+            };
+
+            const itemsPerifericos = [];
+            
+            document.querySelectorAll('.peri-check:checked').forEach(chk => {
+                itemsPerifericos.push({
+                    idComponente: mapIds[chk.value], 
+                    fmoSerial: document.getElementById('fmoSerial').value || "S/N"
+                });
+            });
+
+            if(document.getElementById('chkOtros').checked) {
+                itemsPerifericos.push({
+                    idComponente: mapIds['Otros'],
+                    fmoSerial: document.getElementById('otrosTxt').value || "Ver Obs."
+                });
+            }
+
+            const payload = {
+                usuario: document.getElementById('usuario').value,
+                clave: "1234",
+                ficha: parseInt(document.getElementById('ficha').value) || 0,
+                nombre: document.getElementById('usuario').value,
+                gerencia: document.getElementById('gerencia').value,
+
+                fmoEquipo: document.getElementById('fmoAsignado').value || "LOTE-PERIF",
+                solicitudST: document.getElementById('solicitudST').value,
+                estatus: "Ingresado",
+                fecha: document.getElementById('fecha').value,
+                
+                observacion: "Falla: " + document.getElementById('falla').value + 
+                             " | Componentes: " + document.getElementById('componentesTxt').value + 
+                             " | Asignado A: " + document.getElementById('asignadoA').value +
+                             " | Solicitud DAET: " + document.getElementById('solicitudDaet').value,
+
+                itemsPerifericos: itemsPerifericos
+            };
+
+            console.log("Enviando Periféricos:", payload);
+
+            if(itemsPerifericos.length === 0) {
+                alert("Debes seleccionar al menos un periférico.");
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8080/api/perifericos/crear', { 
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+
+                if(response.ok) {
+                    alert("Recibo de Periféricos Guardado");
+                    window.location.reload();
+                } else {
+                    alert("Error del servidor");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Error de conexión");
+            }
+        }
+    </script>
 </body>
 </html>
