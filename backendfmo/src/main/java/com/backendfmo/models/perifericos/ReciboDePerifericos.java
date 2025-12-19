@@ -40,4 +40,7 @@ public class ReciboDePerifericos {
 
     @Column(name = "fmo_serial")
     private String fmoSerial;
+    
+    @Column(name = "otro")
+    private String otro;
 }

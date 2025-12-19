@@ -27,4 +27,6 @@ public class RegistroPerifericosDTO {
 
     // La lista de periféricos
     private List<ComponenteItemDTO> componentePerifericos;
+
+    private String otro;
 }

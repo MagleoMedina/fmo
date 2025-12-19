@@ -12,11 +12,10 @@ import com.backendfmo.dtos.request.reciboperifericos.ComponenteItemDTO;
 import com.backendfmo.dtos.request.reciboperifericos.RegistroPerifericosDTO;
 import com.backendfmo.dtos.response.reciboperifericos.ComponenteItemResponseDTO;
 import com.backendfmo.dtos.response.reciboperifericos.ReciboPerifericosDTO;
-import com.backendfmo.models.perifericos.Periferico;
 import com.backendfmo.models.perifericos.ReciboDePerifericos;
 import com.backendfmo.models.reciboequipos.ComponenteInterno;
 import com.backendfmo.models.reciboequipos.EncabezadoRecibo;
-import com.backendfmo.models.reciboequipos.ReciboPeriferico;
+import com.backendfmo.models.reciboequipos.ReciboDeEquipos;
 import com.backendfmo.models.reciboequipos.Usuario;
 import com.backendfmo.repository.ComponenteInternoRepository;
 import com.backendfmo.repository.ReciboDePerifericosRepository;
@@ -71,7 +70,7 @@ public class PerifericosService {
                 ReciboDePerifericos periferico = new ReciboDePerifericos();
                 periferico.setFmoSerial(itemDto.getFmoSerial());
                 periferico.setComponenteRef(componenteBD); // Asignamos la referencia encontrada
-
+                periferico.setOtro(dto.getOtro());
                 // C. VINCULAR al Encabezado
                 encabezado.agregarPeriferico(periferico);
             }
@@ -119,7 +118,7 @@ public class PerifericosService {
             response.setFicha(usuario.getFicha()); 
             response.setUsuario(usuario.getUsuario());
         }
-
+        
         // Mapear Datos del Encabezado
         response.setSolicitudST(encabezado.getSolicitudST());
         response.setSolicitudDAET(encabezado.getSolicitudDAET());
@@ -130,6 +129,8 @@ public class PerifericosService {
         response.setRecibidoPor(encabezado.getRecibidoPor());
         response.setEntregadoPor(encabezado.getEntregadoPor());
         response.setFalla(encabezado.getFalla());
+
+        
         
         // CORRECCIÓN 1: Usar getPerifericos() en lugar de getReciboDePerifericos()
         // Esto coincide con: private List<ReciboDePerifericos> perifericos; en EncabezadoRecibo.java
@@ -140,6 +141,7 @@ public class PerifericosService {
                 ComponenteItemResponseDTO itemDto = new ComponenteItemResponseDTO();
                 itemDto.setFmoSerial(item.getFmoSerial());
                 
+                
                 if (item.getComponenteRef() != null) {
                     itemDto.setIdComponente(item.getComponenteRef().getId());
                 }
@@ -148,6 +150,7 @@ public class PerifericosService {
         }
         
         // CORRECCIÓN 2: Ahora funciona porque renombramos el campo en el DTO
+        response.setOtro(perifericoHijo.getOtro());
         response.setComponentePerifericos(listaItems);
 
         return response;
