@@ -25,6 +25,10 @@ public class EquipoDTO {
 
     private String observacionSeriales; 
 
+    private List<Long> idsAplicaciones;
+
+    private List<String> aplicacionesExtra;
+
 
     
 }

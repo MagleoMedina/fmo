@@ -78,4 +78,15 @@ public class ReciboDeEquipos {
         serialesAsignados.add(relacion);
         relacion.setEquipoRelacion(this);
     }
+
+    // NUEVA LISTA: Aplicaciones
+    @OneToMany(mappedBy = "equipoRelacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AplicacionReciboEquipos> aplicacionesInstaladas = new ArrayList<>();
+
+    // Helper
+    public void agregarAplicacion(AplicacionReciboEquipos relacion) {
+        aplicacionesInstaladas.add(relacion);
+        relacion.setEquipoRelacion(this);
+    }
 }

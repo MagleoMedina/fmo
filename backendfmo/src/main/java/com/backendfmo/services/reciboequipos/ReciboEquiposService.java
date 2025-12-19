@@ -16,6 +16,8 @@ import com.backendfmo.dtos.response.reciboequipos.BusquedaCompletaDTO;
 import com.backendfmo.dtos.response.reciboequipos.ComponenteResumenDTO;
 import com.backendfmo.dtos.response.reciboequipos.EquipoResponseDTO;
 import com.backendfmo.dtos.response.reciboequipos.SerialResumenDTO;
+import com.backendfmo.models.AplicacionReciboEquipos;
+import com.backendfmo.models.Aplicaciones;
 import com.backendfmo.models.CarpetaDeRed;
 import com.backendfmo.models.CarpetaRedRecibo;
 import com.backendfmo.models.ComponenteInterno;
@@ -25,12 +27,13 @@ import com.backendfmo.models.ReciboDeEquipos;
 import com.backendfmo.models.SerialComponente;
 import com.backendfmo.models.SerialRecibo;
 import com.backendfmo.models.Usuario;
+import com.backendfmo.repository.AplicacionesRepository;
 import com.backendfmo.repository.ComponenteInternoRepository;
 import com.backendfmo.repository.EncabezadoReciboRepository;
 import com.backendfmo.repository.UsuarioRepository;
 
 @Service
-public class ReciboEquiposService implements IReciboEquiposService{
+public class ReciboEquiposService implements IReciboEquiposService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -40,6 +43,9 @@ public class ReciboEquiposService implements IReciboEquiposService{
 
     @Autowired
     private EncabezadoReciboRepository encabezadoRepository;
+
+    @Autowired
+    private AplicacionesRepository aplicacionesRepository;
 
     @Override
     @Transactional
@@ -72,8 +78,6 @@ public class ReciboEquiposService implements IReciboEquiposService{
                         ReciboDeEquipos equipo = new ReciboDeEquipos();
                         equipo.setMarca(equipoDto.getMarca());
                         equipo.setRespaldo(equipoDto.getRespaldo());
-
-                        
 
                         // --- BLOQUE 1: CARPETAS (INICIO) ---
                         if (equipoDto.getNombresCarpetas() != null) {
@@ -115,11 +119,12 @@ public class ReciboEquiposService implements IReciboEquiposService{
                         if (equipoDto.getSeriales() != null) {
                             String obsParaGuardar = equipoDto.getObservacionSeriales();
                             for (SerialDetalleDTO serialDto : equipoDto.getSeriales()) {
-                                
+
                                 // A. BUSCAR EL TIPO EN BD (Catálogo)
                                 ComponenteInterno tipoExistente = componenteRepository
-                                    .findById(serialDto.getIdTipoComponente())
-                                    .orElseThrow(() -> new RuntimeException("Tipo componente no encontrado ID: " + serialDto.getIdTipoComponente()));
+                                        .findById(serialDto.getIdTipoComponente())
+                                        .orElseThrow(() -> new RuntimeException("Tipo componente no encontrado ID: "
+                                                + serialDto.getIdTipoComponente()));
 
                                 // B. CREAR EL COMPONENTE FÍSICO (SerialComponente)
                                 SerialComponente fisico = new SerialComponente();
@@ -127,15 +132,54 @@ public class ReciboEquiposService implements IReciboEquiposService{
                                 fisico.setSerial(serialDto.getSerial());
                                 fisico.setCapacidad(serialDto.getCapacidad());
                                 fisico.setComponenteTipo(tipoExistente); // Asignamos el tipo encontrado
-                                
+
                                 // C. CREAR LA RELACIÓN (SerialRecibo)
                                 SerialRecibo linkSerial = new SerialRecibo();
-                                linkSerial.setSerialComponente(fisico); // Gracias al CascadeType.ALL, esto guarda 'fisico'
-                                
+                                linkSerial.setSerialComponente(fisico); // Gracias al CascadeType.ALL, esto guarda
+                                                                        // 'fisico'
+
                                 // Asignamos la observación general a ESTE registro específico
                                 linkSerial.setObservacion(obsParaGuardar);
                                 // D. VINCULAR AL EQUIPO
                                 equipo.agregarSerial(linkSerial);
+                            }
+                        }
+                        // A. PROCESAR LOS IDS (Checkboxes marcados: SAP, Siquel...)
+                        if (equipoDto.getIdsAplicaciones() != null) {
+                            for (Long idApp : equipoDto.getIdsAplicaciones()) {
+                                Aplicaciones appExistente = aplicacionesRepository.findById(idApp)
+                                        .orElseThrow(() -> new RuntimeException("App ID no encontrada: " + idApp));
+
+                                AplicacionReciboEquipos linkApp = new AplicacionReciboEquipos();
+                                linkApp.setAplicacionRef(appExistente);
+                                equipo.agregarAplicacion(linkApp);
+                            }
+                        }
+
+                        // B. PROCESAR TEXTOS EXTRA (Lo que el usuario escribió: "WinRAR", "Chrome")
+                        if (equipoDto.getAplicacionesExtra() != null) {
+                            for (String nombreApp : equipoDto.getAplicacionesExtra()) {
+
+                                // Limpieza básica (trim)
+                                String nombreLimpio = nombreApp.trim();
+                                if (nombreLimpio.isEmpty())
+                                    continue;
+
+                                // LÓGICA BUSCAR O CREAR
+                                Aplicaciones aplicacionFinal = aplicacionesRepository
+                                        .findByNombreIgnoreCase(nombreLimpio)
+                                        .orElseGet(() -> {
+                                            // Si no existe, la creamos al vuelo
+                                            Aplicaciones nueva = new Aplicaciones();
+                                            nueva.setNombre(nombreLimpio); // Guardamos tal cual escribió (o
+                                                                           // .toUpperCase())
+                                            return aplicacionesRepository.save(nueva);
+                                        });
+
+                                // Creamos la relación con la app (sea nueva o vieja)
+                                AplicacionReciboEquipos linkExtra = new AplicacionReciboEquipos();
+                                linkExtra.setAplicacionRef(aplicacionFinal);
+                                equipo.agregarAplicacion(linkExtra);
                             }
                         }
                         // Finalmente agregamos el equipo al encabezado
@@ -150,7 +194,7 @@ public class ReciboEquiposService implements IReciboEquiposService{
 
     @Transactional(readOnly = true)
     public List<BusquedaCompletaDTO> buscarPorFmo(String fmoEquipo) {
-        
+
         // 1. Buscamos en BD (Ahora recibimos una LISTA)
         List<EncabezadoRecibo> listaEncabezados = encabezadoRepository.buscarPorFmoConUsuario(fmoEquipo);
 
@@ -164,9 +208,9 @@ public class ReciboEquiposService implements IReciboEquiposService{
 
         // 2. Iteramos sobre cada Encabezado encontrado
         for (EncabezadoRecibo encabezado : listaEncabezados) {
-            
+
             BusquedaCompletaDTO dto = new BusquedaCompletaDTO();
-            
+
             // --- Mapeo Usuario (Abuelo) ---
             Usuario user = encabezado.getUsuarioRelacion();
             dto.setUsuarioNombre(user.getNombre());
@@ -185,16 +229,28 @@ public class ReciboEquiposService implements IReciboEquiposService{
             dto.setFalla(encabezado.getFalla());
             dto.setObservacion(encabezado.getObservacion());
             dto.setSolicitudDAET(encabezado.getSolicitudDAET());
-            
+
             // --- Mapeo Equipos (Hijos) ---
             List<EquipoResponseDTO> listaEquiposDto = new ArrayList<>();
-            
+
             for (ReciboDeEquipos equipoEntity : encabezado.getListaEquipos()) {
                 EquipoResponseDTO equipoDto = new EquipoResponseDTO();
                 equipoDto.setMarca(equipoEntity.getMarca());
                 equipoDto.setRespaldo(equipoEntity.getRespaldo());
-                
-              if (equipoEntity.getSerialesAsignados() != null && !equipoEntity.getSerialesAsignados().isEmpty()) {
+
+                List<String> listaNombresApps = new ArrayList<>();
+
+                if (equipoEntity.getAplicacionesInstaladas() != null) {
+                    for (AplicacionReciboEquipos appRecibo : equipoEntity.getAplicacionesInstaladas()) {
+                        // Navegamos: Link -> Objeto Aplicacion -> Nombre
+                        if (appRecibo.getAplicacionRef() != null) {
+                            listaNombresApps.add(appRecibo.getAplicacionRef().getNombre());
+                        }
+                    }
+                }
+                equipoDto.setAplicaciones(listaNombresApps);
+
+                if (equipoEntity.getSerialesAsignados() != null && !equipoEntity.getSerialesAsignados().isEmpty()) {
                     // Tomamos la observación del PRIMER elemento (index 0)
                     // Asumimos que es idéntica para todos los seriales de este grupo
                     String obs = equipoEntity.getSerialesAsignados().get(0).getObservacion();
@@ -223,12 +279,12 @@ public class ReciboEquiposService implements IReciboEquiposService{
                 for (SerialRecibo sr : equipoEntity.getSerialesAsignados()) {
                     SerialResumenDTO sDto = new SerialResumenDTO();
                     SerialComponente fisico = sr.getSerialComponente();
-                    
+
                     sDto.setMarca(fisico.getMarca());
                     sDto.setSerial(fisico.getSerial());
                     sDto.setCapacidad(fisico.getCapacidad());
                     sDto.setTipoComponente(fisico.getComponenteTipo().getNombre());
-                    
+
                     seriales.add(sDto);
                 }
                 equipoDto.setComponentesConSerial(seriales);
@@ -237,7 +293,7 @@ public class ReciboEquiposService implements IReciboEquiposService{
             }
 
             dto.setEquipos(listaEquiposDto);
-            
+
             // Agregamos el DTO completo a la lista de respuesta
             respuestaLista.add(dto);
         }
