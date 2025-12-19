@@ -13,4 +13,5 @@ public class SerialDetalleDTO {
     private String marca;          // "Kingston"
     private String serial;         // "XJ-900"
     private String capacidad;      // "8GB"
+  //  private String observacion;    // "En buen estado"
 }

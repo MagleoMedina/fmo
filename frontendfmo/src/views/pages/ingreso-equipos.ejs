@@ -324,60 +324,82 @@
         </div>
     </div>
 
-    <script src="/src/public/js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="/src/public/js/api.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="/js/api.js"></script> 
     
     <script>
-        import ApiService from '/src/public/js/api.js';
+        // Definimos la función de manera global para que el onclick del HTML la encuentre
         async function guardarRecibo() {
-            // ... (Recolección de datos de Usuario y Encabezado igual que antes) ...
-            const usuarioData = {
-                usuario: document.getElementById('usuario').value,
-                clave: document.getElementById('clave').value,
-                ficha: parseInt(document.getElementById('ficha').value) || 0,
-                nombre: document.getElementById('nombre').value,
-                extension: document.getElementById('extension').value,
-                gerencia: document.getElementById('gerencia').value,
-            };
+            console.log("Iniciando proceso de guardado...");
 
-            // ... (Recolección de componentes genéricos/cantidad igual que antes) ...
-            const listaComponentes = [];
+            // --- 1. DATOS DE USUARIO ---
+            const usuario = document.getElementById('usuario').value;
+            const clave = document.getElementById('clave').value;
+            const ficha = parseInt(document.getElementById('ficha').value) || 0;
+            const nombre = document.getElementById('nombre').value;
+            const extension = document.getElementById('extension').value;
+            const gerencia = document.getElementById('gerencia').value;
+
+            // --- 2. LISTA DE NOMBRES DE CARPETAS ---
+            const carpetasRaw = document.getElementById('carpetaRed').value;
+            // Separa por comas, quita espacios y filtra vacíos
+            const nombresCarpetas = carpetasRaw 
+                ? carpetasRaw.split(',').map(s => s.trim()).filter(s => s !== "") 
+                : [];
+
+            // --- 3. LISTA DE COMPONENTES (CANTIDADES) ---
+            const componentes = [];
+            
+            // Lógica para Memoria RAM (tiene input de cantidad)
             if(document.getElementById('checkRam').checked) {
-                listaComponentes.push({ idComponente: 1, cantidad: parseInt(document.getElementById('cantRam').value) || 1 });
+                componentes.push({
+                    idComponente: 1, // ID Ficticio RAM
+                    cantidad: parseInt(document.getElementById('cantRam').value) || 1
+                });
             }
-            // (Añadir lógica resto de checkboxes aquí)
+            
+            // Lógica para el resto de checkboxes (cantidad 1)
+            // Asignamos IDs ficticios basados en el orden + 2
+            const otrosChecks = document.querySelectorAll('.componente-check:checked:not(#checkRam)');
+            otrosChecks.forEach((check, index) => {
+                componentes.push({
+                    idComponente: index + 2, 
+                    cantidad: 1
+                });
+            });
 
-            // --- NUEVA LÓGICA: RECOLECTAR SERIALES ESPECÍFICOS ---
-            const listaSeriales = [];
+            // --- 4. LISTA DE SERIALES ---
+            const seriales = [];
 
-            // Helper para añadir solo si tiene serial escrito
+            // Función auxiliar para añadir seriales únicos
             const addSerial = (idTipo, marcaId, serialId, capId = null) => {
-                const serial = document.getElementById(serialId)?.value;
-                if(serial) {
-                    listaSeriales.push({
-                        idTipoComponente: idTipo, // ID en BD (ej: 4=Madre, 5=Fuente...)
-                        marca: document.getElementById(marcaId).value,
-                        serial: serial,
+                const serialVal = document.getElementById(serialId)?.value;
+                if(serialVal) {
+                    seriales.push({
+                        idTipoComponente: idTipo,
+                        marca: document.getElementById(marcaId).value || "Genérico",
+                        serial: serialVal,
                         capacidad: capId ? document.getElementById(capId).value : "N/A"
                     });
                 }
             };
 
-            // 1. Componentes Únicos (Asumimos IDs ficticios de tu BD)
-            addSerial(10, 'marcaMadre', 'serialMadre');  // ID 10 = Tarjeta Madre
-            addSerial(11, 'marcaFuente', 'serialFuente'); // ID 11 = Fuente
-            addSerial(12, 'marcaVideo', 'serialVideo');   // ID 12 = Video
-            addSerial(13, 'marcaRed', 'serialRed');       // ID 13 = Red
+            // Seriales únicos de la base de datos (Madre, Fuente, Video, Red)
+            addSerial(10, 'marcaMadre', 'serialMadre'); 
+            addSerial(11, 'marcaFuente', 'serialFuente');
+            addSerial(12, 'marcaVideo', 'serialVideo');
+            addSerial(13, 'marcaRed', 'serialRed');
 
-            // 2. RAM (Múltiples filas)
+            // Seriales Múltiples (RAM - Filas dinámicas)
             const ramsMarcas = document.querySelectorAll('.ram-marca');
             const ramsSeriales = document.querySelectorAll('.ram-serial');
             const ramsCaps = document.querySelectorAll('.ram-capacidad');
             
             ramsSeriales.forEach((inputSerial, i) => {
                 if(inputSerial.value) {
-                    listaSeriales.push({
-                        idTipoComponente: 1, // ID 1 = RAM
+                    seriales.push({
+                        idTipoComponente: 1, // ID RAM
                         marca: ramsMarcas[i].value,
                         serial: inputSerial.value,
                         capacidad: ramsCaps[i].value
@@ -385,15 +407,15 @@
                 }
             });
 
-            // 3. Discos Duros (Múltiples filas)
+            // Seriales Múltiples (Disco Duro - Filas dinámicas)
             const hddsMarcas = document.querySelectorAll('.hdd-marca');
             const hddsSeriales = document.querySelectorAll('.hdd-serial');
             const hddsCaps = document.querySelectorAll('.hdd-capacidad');
 
             hddsSeriales.forEach((inputSerial, i) => {
                 if(inputSerial.value) {
-                    listaSeriales.push({
-                        idTipoComponente: 2, // ID 2 = Disco Duro
+                    seriales.push({
+                        idTipoComponente: 2, // ID Disco Duro
                         marca: hddsMarcas[i].value,
                         serial: inputSerial.value,
                         capacidad: hddsCaps[i].value
@@ -401,51 +423,77 @@
                 }
             });
 
-
-            // --- ARMAR PAYLOAD FINAL ---
-            const carpetasRaw = document.getElementById('carpetaRed').value;
-            const listaCarpetas = carpetasRaw ? carpetasRaw.split(',').map(s => s.trim()) : [];
+            // --- 5. OBSERVACIONES (Concatenar Apps y Obs de Seriales) ---
             const obsGeneral = document.getElementById('observacion').value;
-            const obsSeriales = document.getElementById('observacionSeriales').value;
+            const obsSeriales = document.getElementById('observacionSeriales') ? document.getElementById('observacionSeriales').value : "";
+            const appsSeleccionadas = Array.from(document.querySelectorAll('.app-check:checked')).map(c => c.value).join(', ');
+            
+            let observacionFinal = obsGeneral;
+            if(appsSeleccionadas) observacionFinal += " | Apps: " + appsSeleccionadas;
+            if(obsSeriales) observacionFinal += " | Obs. Seriales: " + obsSeriales;
 
+
+            // --- 6. ARMAR EL JSON FINAL (Estructura Solicitada) ---
             const payload = {
-                ...usuarioData,
+                usuario: usuario,
+                clave: clave,
+                gerencia: gerencia,
+                nombre: nombre,
+                ficha: ficha,
+                extension: extension,
                 recibos: [
                     {
-                        fmoEquipo: document.getElementById('fmoEquipo').value,
-                        solicitudDAET: document.getElementById('solicitudDAET').value,
-                        solicitudST: document.getElementById('solicitudST').value,
-                        entregadoPor: document.getElementById('entregadoPor').value,
-                        recibidoPor: document.getElementById('recibidoPor').value,
                         asignadoA: document.getElementById('asignadoA').value,
+                        entregadoPor: document.getElementById('entregadoPor').value,
+                        fmoEquipo: document.getElementById('fmoEquipo').value,
                         estatus: document.getElementById('estatus').value,
                         falla: document.getElementById('falla').value,
-                        fecha: document.getElementById('fecha').value,
-                        // Concatenamos ambas observaciones
-                        observacion: obsGeneral + (obsSeriales ? " | Obs. Seriales: " + obsSeriales : ""),
-                        
+                        fecha: document.getElementById('fecha').value, // Formato YYYY-MM-DD
+                        observacion: observacionFinal,
+                        recibidoPor: document.getElementById('recibidoPor').value,
+                        solicitudDAET: document.getElementById('solicitudDAET').value,
+                        solicitudST: document.getElementById('solicitudST').value,
                         equipos: [
                             {
                                 marca: document.getElementById('marca').value,
-                                respaldo: document.querySelector('input[name="respaldo"]:checked')?.value || 'No',
-                                nombresCarpetas: listaCarpetas,
-                                componentes: listaComponentes,
-                                seriales: listaSeriales // <--- AQUÍ VA LA LISTA NUEVA
+                                respaldo: document.querySelector('input[name="respaldo"]:checked')?.value || 'NO',
+                                nombresCarpetas: nombresCarpetas,
+                                componentes: componentes,
+                                seriales: seriales
                             }
                         ]
                     }
                 ]
             };
 
-            // Enviar (Igual que antes)
+            console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+
+            // --- 7. ENVÍO AL BACKEND ---
             try {
-                // Llamada limpia:
+                // NOTA: Se agregó 'http://' que faltaba en tu código
+                const response = await fetch('http://127.0.0.1:8081/api/crearReciboEquipos', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Respuesta servidor:", data);
+                alert("¡Recibo guardado exitosamente!");
                 
-                const resultado = await ApiService.ingresos.crear(payload);
-                
-                alert("¡Recibo Guardado Correctamente! ID Usuario: " + resultado.id);
-                window.location.reload();
-            } catch (e) { console.error(e); }
+                // Opcional: Recargar página
+                // window.location.reload();
+
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                alert("Error al guardar: " + error.message);
+            }
         }
     </script>
 </body>

@@ -73,6 +73,8 @@ public class ReciboEquiposService implements IReciboEquiposService{
                         equipo.setMarca(equipoDto.getMarca());
                         equipo.setRespaldo(equipoDto.getRespaldo());
 
+                        
+
                         // --- BLOQUE 1: CARPETAS (INICIO) ---
                         if (equipoDto.getNombresCarpetas() != null) {
                             for (String nombreCarpeta : equipoDto.getNombresCarpetas()) {
@@ -111,6 +113,7 @@ public class ReciboEquiposService implements IReciboEquiposService{
 
                         // --- BLOQUE 3: SERIALES ESPECÍFICOS (NUEVO) ---
                         if (equipoDto.getSeriales() != null) {
+                            String obsParaGuardar = equipoDto.getObservacionSeriales();
                             for (SerialDetalleDTO serialDto : equipoDto.getSeriales()) {
                                 
                                 // A. BUSCAR EL TIPO EN BD (Catálogo)
@@ -124,11 +127,13 @@ public class ReciboEquiposService implements IReciboEquiposService{
                                 fisico.setSerial(serialDto.getSerial());
                                 fisico.setCapacidad(serialDto.getCapacidad());
                                 fisico.setComponenteTipo(tipoExistente); // Asignamos el tipo encontrado
-
+                                
                                 // C. CREAR LA RELACIÓN (SerialRecibo)
                                 SerialRecibo linkSerial = new SerialRecibo();
                                 linkSerial.setSerialComponente(fisico); // Gracias al CascadeType.ALL, esto guarda 'fisico'
-
+                                
+                                // Asignamos la observación general a ESTE registro específico
+                                linkSerial.setObservacion(obsParaGuardar);
                                 // D. VINCULAR AL EQUIPO
                                 equipo.agregarSerial(linkSerial);
                             }
@@ -188,6 +193,13 @@ public class ReciboEquiposService implements IReciboEquiposService{
                 EquipoResponseDTO equipoDto = new EquipoResponseDTO();
                 equipoDto.setMarca(equipoEntity.getMarca());
                 equipoDto.setRespaldo(equipoEntity.getRespaldo());
+                
+              if (equipoEntity.getSerialesAsignados() != null && !equipoEntity.getSerialesAsignados().isEmpty()) {
+                    // Tomamos la observación del PRIMER elemento (index 0)
+                    // Asumimos que es idéntica para todos los seriales de este grupo
+                    String obs = equipoEntity.getSerialesAsignados().get(0).getObservacion();
+                    equipoDto.setObservacionSeriales(obs);
+                }
 
                 // A. Extraer Carpetas
                 List<String> carpetas = new ArrayList<>();

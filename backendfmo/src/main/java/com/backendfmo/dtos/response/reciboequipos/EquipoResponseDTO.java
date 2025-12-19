@@ -17,4 +17,5 @@ public class EquipoResponseDTO {
     private List<String> carpetas;           // Solo los nombres
     private List<ComponenteResumenDTO> componentesGenericos; // Cantidad + Nombre
     private List<SerialResumenDTO> componentesConSerial;     // Detalles completos
+    private String observacionSeriales;
 }

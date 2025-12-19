@@ -23,5 +23,8 @@ public class EquipoDTO {
     // NUEVA LISTA: Para componentes con Serial
     private List<SerialDetalleDTO> seriales;
 
+    private String observacionSeriales; 
+
+
     
 }

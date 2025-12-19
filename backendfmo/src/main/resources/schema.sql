@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS serial_recibo (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	recibo_de_equipos INTEGER,
 	serial_componentes INTEGER,
+	observacion TEXT,
 	FOREIGN KEY(recibo_de_equipos) REFERENCES recibo_de_equipos(id) ON UPDATE CASCADE,
 	FOREIGN KEY(serial_componentes)REFERENCES serial_componentes(id) ON UPDATE CASCADE
 
@@ -144,5 +145,19 @@ CREATE TABLE IF NOT EXISTS componentes_recibo (
 	FOREIGN KEY(componentes_computadora_internos)REFERENCES componentes_computadora_internos(id) ON UPDATE CASCADE
 
 );
+
+CREATE TABLE IF NOT EXISTS aplicaciones (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	nombre TEXT
+);
+
+CREATE TABLE IF NOT EXISTS aplicaciones_recibo_equipos (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	aplicaciones INTEGER,
+	recibo_de_equipos INTEGER,
+	FOREIGN KEY(aplicaciones) REFERENCES aplicaciones(id) ON UPDATE CASCADE,
+	FOREIGN KEY(recibo_de_equipos) REFERENCES recibo_de_equipos(id) ON UPDATE CASCADE
+);
+
 
 COMMIT;
