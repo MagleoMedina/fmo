@@ -23,7 +23,8 @@ public class RegistroPerifericosDTO {
     private String estatus;
     private String fecha;
     private String observacion;
+    private String falla;
 
     // La lista de periféricos
-    private List<PerifericoItemDTO> itemsPerifericos;
+    private List<ComponenteItemDTO> componentePerifericos;
 }

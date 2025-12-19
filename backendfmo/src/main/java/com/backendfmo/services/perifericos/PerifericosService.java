@@ -1,11 +1,16 @@
 package com.backendfmo.services.perifericos;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backendfmo.dtos.request.reciboperifericos.PerifericoItemDTO;
+import com.backendfmo.dtos.request.reciboperifericos.ComponenteItemDTO;
 import com.backendfmo.dtos.request.reciboperifericos.RegistroPerifericosDTO;
+import com.backendfmo.dtos.response.reciboperifericos.ComponenteItemResponseDTO;
 import com.backendfmo.dtos.response.reciboperifericos.ReciboPerifericosDTO;
 import com.backendfmo.models.perifericos.Periferico;
 import com.backendfmo.models.perifericos.ReciboDePerifericos;
@@ -52,10 +57,11 @@ public class PerifericosService {
         encabezado.setEstatus(dto.getEstatus());
         encabezado.setFecha(dto.getFecha());
         encabezado.setObservacion(dto.getObservacion());
+        encabezado.setFalla(dto.getFalla());
 
         // 3. Procesar Periféricos (Hijos)
-        if (dto.getItemsPerifericos() != null) {
-            for (PerifericoItemDTO itemDto : dto.getItemsPerifericos()) {
+        if (dto.getComponentePerifericos() != null) {
+            for (ComponenteItemDTO itemDto : dto.getComponentePerifericos()) {
                 
                 // A. BUSCAR componente existente en BD (Validación)
                 ComponenteInterno componenteBD = componenteRepository.findById(itemDto.getIdComponente())
@@ -78,41 +84,74 @@ public class PerifericosService {
         return usuarioRepository.save(nuevoUsuario);
     }
 
+@Transactional(readOnly = true)
+    public List<ReciboPerifericosDTO> buscarPorSerial(String fmoSerial) {
+        
+        // 1. Buscar TODOS los registros que coincidan con el serial
+        List<ReciboDePerifericos> resultados = perifericoRepository.findByFmoSerial(fmoSerial);
 
-@Transactional(readOnly = true) // Optimiza la velocidad de lectura
-public ReciboPerifericosDTO buscarPorSerial(String serial) {
-    
-    // 1. Buscamos el registro específico en la tabla recibo_de_perifericos
-    ReciboDePerifericos periferico = perifericoRepository.findByFmoSerial(serial)
-            .orElseThrow(() -> new RuntimeException("No se encontró ningún periférico con el Serial: " + serial));
+        if (resultados.isEmpty()) {
+            throw new RuntimeException("No se encontró ningún componente con el serial: " + fmoSerial);
+        }
 
-    // 2. Extraemos las entidades relacionadas (Navegación hacia arriba)
-    EncabezadoRecibo encabezado = periferico.getEncabezadoRelacion();
-    Usuario usuario = encabezado.getUsuarioRelacion();
+        // 2. Convertir cada resultado encontrado en un DTO
+        return resultados.stream()
+            .map(this::convertirADTO) // Llamamos a un método auxiliar para limpiar el código
+            .collect(Collectors.toList());
+    }
 
-    // 3. Mapeamos a DTO (Llenamos el objeto de respuesta)
-    ReciboPerifericosDTO respuesta = new ReciboPerifericosDTO();
+// Método auxiliar corregido
+    private ReciboPerifericosDTO convertirADTO(ReciboDePerifericos perifericoHijo) {
+        ReciboPerifericosDTO response = new ReciboPerifericosDTO();
+        
+        // Obtener Padre (Encabezado)
+        EncabezadoRecibo encabezado = perifericoHijo.getEncabezadoRelacion();
+        if (encabezado == null) return response; 
 
-    // Datos del ítem
-    respuesta.setFmoSerial(periferico.getFmoSerial());
-    respuesta.setTipoComponente(periferico.getComponenteRef().getNombre()); // Join con tabla componentes
+        // Obtener Abuelo (Usuario)
+        Usuario usuario = encabezado.getUsuarioRelacion(); 
 
-    // Datos del Encabezado
-   // respuesta.setFmoEquipoLote(encabezado.getFmoEquipo());
-    respuesta.setSolicitudST(encabezado.getSolicitudST());
-    respuesta.setEstatus(encabezado.getEstatus());
-    respuesta.setFecha(encabezado.getFecha());
-    respuesta.setObservacion(encabezado.getObservacion());
-    respuesta.setSolicitudDAET(encabezado.getSolicitudDAET());
-    respuesta.setEntregadoPor(encabezado.getEntregadoPor());
-    respuesta.setRecibidoPor(encabezado.getRecibidoPor());
-    respuesta.setAsignadoA(encabezado.getAsignadoA());
+        // Mapear Datos del Usuario
+        if (usuario != null) {
+            // Asumiendo que el DTO tiene estos campos
+            // response.setUsuario(usuario.getUsuario()); 
+            response.setNombre(usuario.getNombre());
+            response.setFicha(usuario.getFicha()); 
+            response.setUsuario(usuario.getUsuario());
+        }
 
-    // Datos del Usuario
-    respuesta.setNombre(usuario.getNombre());
-    respuesta.setFicha(usuario.getFicha());
-    respuesta.setUsuarioGerencia(usuario.getGerencia());
+        // Mapear Datos del Encabezado
+        response.setSolicitudST(encabezado.getSolicitudST());
+        response.setSolicitudDAET(encabezado.getSolicitudDAET());
+        response.setEstatus(encabezado.getEstatus());
+        response.setFecha(encabezado.getFecha()); 
+        response.setObservacion(encabezado.getObservacion());
+        response.setAsignadoA(encabezado.getAsignadoA());
+        response.setRecibidoPor(encabezado.getRecibidoPor());
+        response.setEntregadoPor(encabezado.getEntregadoPor());
+        response.setFalla(encabezado.getFalla());
+        
+        // CORRECCIÓN 1: Usar getPerifericos() en lugar de getReciboDePerifericos()
+        // Esto coincide con: private List<ReciboDePerifericos> perifericos; en EncabezadoRecibo.java
+        List<ComponenteItemResponseDTO> listaItems = new ArrayList<>();
+        
+        if (encabezado.getPerifericos() != null) { 
+            for (ReciboDePerifericos item : encabezado.getPerifericos()) {
+                ComponenteItemResponseDTO itemDto = new ComponenteItemResponseDTO();
+                itemDto.setFmoSerial(item.getFmoSerial());
+                
+                if (item.getComponenteRef() != null) {
+                    itemDto.setIdComponente(item.getComponenteRef().getId());
+                }
+                listaItems.add(itemDto);
+            }
+        }
+        
+        // CORRECCIÓN 2: Ahora funciona porque renombramos el campo en el DTO
+        response.setComponentePerifericos(listaItems);
 
-    return respuesta;
-}
+        return response;
+    }
+
+
 }

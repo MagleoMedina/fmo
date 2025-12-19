@@ -8,7 +8,6 @@ import lombok.Data;
 public class ReciboPerifericosDTO {
     // Datos del Periférico (Hijo)
     private String fmoSerial;
-    private String tipoComponente; // Ej: "Teclado" (Viene del Catálogo)
 
     // Datos del Encabezado (Padre)
     //private String fmoEquipoLote; // El código del encabezado
@@ -20,12 +19,14 @@ public class ReciboPerifericosDTO {
     private String entregadoPor;
     private String recibidoPor;
     private String asignadoA;
+    private String falla;
 
     // Datos del Usuario (Abuelo)
     private String nombre;
     private Integer ficha;
-    private String usuarioGerencia;
+    private String usuario;
 
     // Lista de Items (Checkboxes marcados)
-    private List<ItemPerifericoDTO> itemsPerifericos;
+    //private List<ComponenteItemResponseDTO> itemsComponente;
+    private List<ComponenteItemResponseDTO> componentePerifericos;
 }

@@ -21,7 +21,7 @@ public class PerifericosController {
     public ResponseEntity<?> crearRegistroPerifericos(@RequestBody RegistroPerifericosDTO dto) {
          try {
             perifericosService.registrarPerifericos(dto);
-            return ResponseEntity.ok().body("Registro de periféricos creado exitosamente. ");
+            return ResponseEntity.ok().body(dto);
             
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e.getMessage());
