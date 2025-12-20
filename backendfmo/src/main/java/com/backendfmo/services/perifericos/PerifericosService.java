@@ -11,13 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.backendfmo.dtos.request.reciboperifericos.ComponenteItemDTO;
 import com.backendfmo.dtos.request.reciboperifericos.RegistroPerifericosDTO;
 import com.backendfmo.dtos.response.reciboperifericos.ComponenteItemResponseDTO;
+import com.backendfmo.dtos.response.reciboperifericos.PerifericoResponseDTO;
+import com.backendfmo.dtos.request.reciboperifericos.PerifericoDTO;
 import com.backendfmo.dtos.response.reciboperifericos.ReciboPerifericosDTO;
+import com.backendfmo.models.perifericos.Periferico;
 import com.backendfmo.models.perifericos.ReciboDePerifericos;
 import com.backendfmo.models.reciboequipos.ComponenteInterno;
 import com.backendfmo.models.reciboequipos.EncabezadoRecibo;
-import com.backendfmo.models.reciboequipos.ReciboDeEquipos;
 import com.backendfmo.models.reciboequipos.Usuario;
 import com.backendfmo.repository.ComponenteInternoRepository;
+import com.backendfmo.repository.PerifericoRepository;
 import com.backendfmo.repository.ReciboDePerifericosRepository;
 import com.backendfmo.repository.UsuarioRepository;
 
@@ -32,6 +35,9 @@ public class PerifericosService {
 
     @Autowired
     private ReciboDePerifericosRepository perifericoRepository;
+
+    @Autowired
+    private PerifericoRepository perifericoCatalogoRepository;
 
     @Transactional
     public Usuario registrarPerifericos(RegistroPerifericosDTO dto) {
@@ -57,8 +63,9 @@ public class PerifericosService {
         encabezado.setFecha(dto.getFecha());
         encabezado.setObservacion(dto.getObservacion());
         encabezado.setFalla(dto.getFalla());
+        
 
-        // 3. Procesar Periféricos (Hijos)
+        // 3. Procesar COMPONENTES (Hijos)
         if (dto.getComponentePerifericos() != null) {
             for (ComponenteItemDTO itemDto : dto.getComponentePerifericos()) {
                 
@@ -73,6 +80,27 @@ public class PerifericosService {
                 periferico.setOtro(dto.getOtro());
                 // C. VINCULAR al Encabezado
                 encabezado.agregarPeriferico(periferico);
+            }
+        }
+        //PROCESAR PERIFÉRICOS (Hijos)
+        if (dto.getPerifericos() != null) {
+            for (PerifericoDTO perifDto : dto.getPerifericos()) {
+
+                // A. BUSCAR en el catálogo de Perifericos
+                Periferico perifericoCatalogo = perifericoCatalogoRepository.findById(perifDto.getId())
+                     .orElseThrow(() -> new RuntimeException("Periférico no encontrado con ID: " + perifDto.getId()));
+
+                // B. CREAR la entidad del recibo
+                ReciboDePerifericos reciboItem = new ReciboDePerifericos();
+                
+                // OJO: Aquí no hay serial en el DTO para estos items, solo ID. 
+                // Si requieres serial para monitor/teclado, deberías agregarlo a PerifericoDTO.
+                
+                reciboItem.setPerifericoRef(perifericoCatalogo); // Relación con Periferico
+                //reciboItem.setOtro(dto.getOtro()); // Asignamos el campo 'otro' global también aquí
+               // reciboItem.setFmoSerial(dto.getFmoSerial());
+                // C. VINCULAR al Encabezado
+                encabezado.agregarPeriferico(reciboItem);
             }
         }
 
@@ -130,31 +158,37 @@ public class PerifericosService {
         response.setEntregadoPor(encabezado.getEntregadoPor());
         response.setFalla(encabezado.getFalla());
 
-        
-        
-        // CORRECCIÓN 1: Usar getPerifericos() en lugar de getReciboDePerifericos()
-        // Esto coincide con: private List<ReciboDePerifericos> perifericos; en EncabezadoRecibo.java
-        List<ComponenteItemResponseDTO> listaItems = new ArrayList<>();
+        List<ComponenteItemResponseDTO> listaComponentes = new ArrayList<>();
+        List<PerifericoResponseDTO> listaCatalogo = new ArrayList<>();
         
         if (encabezado.getPerifericos() != null) { 
             for (ReciboDePerifericos item : encabezado.getPerifericos()) {
-                ComponenteItemResponseDTO itemDto = new ComponenteItemResponseDTO();
-                itemDto.setFmoSerial(item.getFmoSerial());
                 
-                
+                // CASO A: Es un Componente Interno (Disco, RAM, etc.)
                 if (item.getComponenteRef() != null) {
+                    ComponenteItemResponseDTO itemDto = new ComponenteItemResponseDTO();
+                    itemDto.setFmoSerial(item.getFmoSerial());
                     itemDto.setIdComponente(item.getComponenteRef().getId());
+                    listaComponentes.add(itemDto);
+                } 
+                
+                // CASO B: Es un Periférico de Catálogo (Monitor, Teclado, etc.)
+                else if (item.getPerifericoRef() != null) {
+                    PerifericoResponseDTO perDto = new PerifericoResponseDTO();
+                    perDto.setId(item.getPerifericoRef().getId());
+                    // Opcional: perDto.setNombre(item.getPerifericoRef().getNombre());
+                    listaCatalogo.add(perDto);
                 }
-                listaItems.add(itemDto);
             }
         }
         
-        // CORRECCIÓN 2: Ahora funciona porque renombramos el campo en el DTO
+        // Asignamos las dos listas por separado
+        response.setComponentePerifericos(listaComponentes);
+        response.setPerifericos(listaCatalogo);
+        
         response.setOtro(perifericoHijo.getOtro());
-        response.setComponentePerifericos(listaItems);
 
         return response;
+
     }
-
-
 }

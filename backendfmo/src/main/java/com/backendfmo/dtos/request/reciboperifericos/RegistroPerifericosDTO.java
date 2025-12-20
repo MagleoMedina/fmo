@@ -24,9 +24,12 @@ public class RegistroPerifericosDTO {
     private String fecha;
     private String observacion;
     private String falla;
+    
 
-    // La lista de periféricos
+    // La lista de Componentes 
     private List<ComponenteItemDTO> componentePerifericos;
 
+    private List<PerifericoDTO> perifericos;
     private String otro;
+    private String fmoSerial;
 }

@@ -26,9 +26,9 @@ public class ReciboPerifericosDTO {
     private Integer ficha;
     private String usuario;
 
-    // Lista de Items (Checkboxes marcados)
-    //private List<ComponenteItemResponseDTO> itemsComponente;
     private List<ComponenteItemResponseDTO> componentePerifericos;
 
     private String otro;
+
+    private List<PerifericoResponseDTO> perifericos;
 }
