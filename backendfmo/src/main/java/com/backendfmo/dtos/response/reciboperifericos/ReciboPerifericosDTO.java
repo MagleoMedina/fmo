@@ -24,6 +24,7 @@ public class ReciboPerifericosDTO {
     private String nombre;
     private Integer ficha;
     private String usuario;
+    private String extension;
 
     private List<ComponenteItemResponseDTO> componentePerifericos;
 
