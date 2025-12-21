@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+    <title>Búsqueda Periféricos</title>
+</head>
+<body>
+    <div class="wrapper">
+        <%- include('../partials/sidebar') %>
+        <div id="content" class="w-100 bg-light p-4">
+            
+            <div class="mb-3">
+                <a href="/busqueda" class="btn btn-outline-secondary btn-sm">
+                    ⬅ Volver al Menú
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="m-0 fw-bold">⌨️ Historial de Periféricos y Componentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="inputBusquedaPerifericos" placeholder="Buscar por Serial, Tipo o Usuario...">
+                        <button class="btn btn-primary" type="button" onclick="buscarPerifericos()">🔍 Buscar</button>
+                    </div>
+
+                    <div id="resultadosPerifericos" class="mt-4 text-center text-muted">
+                        Realice una búsqueda para ver los resultados...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function buscarPerifericos() { alert("Lógica de búsqueda Periféricos pendiente..."); }
+    </script>
+</body>
+</html>

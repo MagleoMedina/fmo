@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <%- include('../partials/head') %>
+    <title>Búsqueda DAET</title>
+</head>
+<body>
+    <div class="wrapper">
+        <%- include('../partials/sidebar') %>
+        <div id="content" class="w-100 bg-light p-4">
+            
+            <div class="mb-3">
+                <a href="/busqueda" class="btn btn-outline-secondary btn-sm">
+                    ⬅ Volver al Menú
+                </a>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="m-0 fw-bold">🚚 Búsqueda de Entregas al DAET</h5>
+                </div>
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="inputBusquedaDaet" placeholder="Buscar por Serial, Solicitud DAET o Fecha...">
+                        <button class="btn btn-primary" type="button" onclick="buscarDaet()">🔍 Buscar</button>
+                    </div>
+
+                    <div id="resultadosDaet" class="mt-4 text-center text-muted">
+                        Realice una búsqueda para ver los resultados...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function buscarDaet() { alert("Lógica de búsqueda DAET pendiente..."); }
+    </script>
+</body>
+</html>
