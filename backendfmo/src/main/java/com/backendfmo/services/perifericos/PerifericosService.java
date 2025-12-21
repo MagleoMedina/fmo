@@ -61,8 +61,6 @@ public class PerifericosService {
         encabezado.setEstatus(dto.getEstatus());
         encabezado.setFecha(dto.getFecha());
         encabezado.setFalla(dto.getFalla());
-        // Concatenamos observaciones si es necesario
-        //encabezado.setObservacion(dto.getObservacion()); 
 
         // Variable de control para saber si ya guardamos algo
         boolean itemProcesado = false;
@@ -145,6 +143,21 @@ public class PerifericosService {
             .collect(Collectors.toList());
     }
 
+@Transactional(readOnly = true)
+    public List<ReciboPerifericosDTO> listarTodoReciboPerifericos() {
+        
+        // 1. Buscar TODOS los registros que coincidan con el serial
+        List<ReciboDePerifericos> resultados = perifericoRepository.findAll();
+
+        if (resultados.isEmpty()) {
+            throw new RuntimeException("No se encontraron registros de periféricos.");
+        }
+
+        // 2. Convertir cada resultado encontrado en un DTO
+        return resultados.stream()
+            .map(this::convertirADTO) // Llamamos a un método auxiliar para limpiar el código
+            .collect(Collectors.toList());
+    }
 // Método auxiliar corregido
     private ReciboPerifericosDTO convertirADTO(ReciboDePerifericos perifericoHijo) {
         ReciboPerifericosDTO response = new ReciboPerifericosDTO();
@@ -159,7 +172,6 @@ public class PerifericosService {
         // Mapear Datos del Usuario
         if (usuario != null) {
             // Asumiendo que el DTO tiene estos campos
-            // response.setUsuario(usuario.getUsuario()); 
             response.setNombre(usuario.getNombre());
             response.setFicha(usuario.getFicha()); 
             response.setUsuario(usuario.getUsuario());
@@ -193,7 +205,6 @@ public class PerifericosService {
                 else if (item.getPerifericoRef() != null) {
                     PerifericoResponseDTO perDto = new PerifericoResponseDTO();
                     perDto.setId(item.getPerifericoRef().getId());
-                    // Opcional: perDto.setNombre(item.getPerifericoRef().getNombre());
                     listaCatalogo.add(perDto);
                 }
             }

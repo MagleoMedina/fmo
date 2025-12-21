@@ -30,7 +30,7 @@ public class ReciboEquiposController {
     }
 
     @GetMapping("/buscarReciboEquipos/{fmo}")
-    public ResponseEntity<?> obtenerDatosPorFmo(@Valid @PathVariable String fmo) {
+    public ResponseEntity<?> obtenerDatosPorFmo(@PathVariable String fmo) {
         
         return ResponseEntity.ok(service.buscarPorFmo(fmo));
     }

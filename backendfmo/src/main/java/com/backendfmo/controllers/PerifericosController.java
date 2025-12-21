@@ -39,4 +39,14 @@ public class PerifericosController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscarReciboPerifericos")
+    public ResponseEntity<?> buscarReciboDePeriferico() {
+        try {
+            return ResponseEntity.ok(perifericosService.listarTodoReciboPerifericos());
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
 }
