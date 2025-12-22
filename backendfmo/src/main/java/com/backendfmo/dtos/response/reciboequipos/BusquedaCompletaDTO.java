@@ -22,6 +22,7 @@ public class BusquedaCompletaDTO {
     private String solicitudST;
     private String fecha;
     private String estatus;
+    private String extension;
 
     private String entregadoPor;
     private String recibidorPor;

@@ -265,6 +265,7 @@ public class ReciboEquiposService implements IReciboEquiposService {
             dto.setUsuarioFicha(String.valueOf(user.getFicha()));
             dto.setUsuarioGerencia(user.getGerencia());
             dto.setClave(user.getClave());
+            dto.setExtension(user.getExtension());
         }
 
         // --- Mapeo Encabezado (Padre) ---
