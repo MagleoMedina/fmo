@@ -1,20 +1,17 @@
 package com.backendfmo.controllers;
 
-import java.time.LocalDate;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backendfmo.dtos.request.entregasdaet.RegistroDaetDTO;
-import com.backendfmo.dtos.response.entregasdaet.BusquedaDaetDTO;
 import com.backendfmo.services.daet.DaetService;
 
 import jakarta.validation.Valid;
@@ -40,7 +37,7 @@ public class EntregasAlDAETController {
 
     @GetMapping("/buscarEntregasAlDaet/{fmoSerial}") 
     public ResponseEntity<?> buscarPorSerial(@PathVariable String fmoSerial) {
-        return ResponseEntity.ok(daetService.buscarPorSerialDaet2(fmoSerial));
+        return ResponseEntity.ok(daetService.buscarPorSerialDaet(fmoSerial));
     }
 
     @GetMapping("/buscarEntregasAlDaet") 

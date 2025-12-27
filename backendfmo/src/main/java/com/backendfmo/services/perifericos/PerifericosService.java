@@ -143,6 +143,21 @@ public class PerifericosService {
             .collect(Collectors.toList());
     }
 
+        public List<ReciboPerifericosDTO> buscarPorFecha(String fecha) {
+        
+        // 1. Buscar TODOS los registros que coincidan con el serial
+        List<ReciboDePerifericos> resultados = perifericoRepository.findByFechaEncabezado(fecha);
+
+        if (resultados.isEmpty()) {
+            throw new RuntimeException("No se encontró ningún recibo con la fecha: " + fecha);
+        }
+
+        // 2. Convertir cada resultado encontrado en un DTO
+        return resultados.stream()
+            .map(this::convertirADTO) // Llamamos a un método auxiliar para limpiar el código
+            .collect(Collectors.toList());
+    }
+
 @Transactional(readOnly = true)
     public List<ReciboPerifericosDTO> listarTodoReciboPerifericos() {
         

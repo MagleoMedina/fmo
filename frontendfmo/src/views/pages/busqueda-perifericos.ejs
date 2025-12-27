@@ -278,7 +278,7 @@
         async function buscarPerifericos() {
             const filtro = document.getElementById('filtroSelect').value;
             // Asegúrate que tu Controller tenga estas rutas
-            let url = 'http://127.0.0.1:8081/api/recibo-perifericos/listar-todo'; 
+            let url = 'http://127.0.0.1:8081/api/buscarReciboPerifericos'; 
 
             if (filtro === 'serial') {
                 const val = document.getElementById('inputBusquedaSerial').value;
@@ -288,7 +288,12 @@
             else if (filtro === 'fecha') {
                 const val = document.getElementById('inputBusquedaFecha').value;
                 if(!val) return alert("Seleccione Fecha");
-                url = `http://127.0.0.1:8081/api/recibo-perifericos/buscar-fecha?fecha=${val}`;
+                let fechaFormateada = "";
+                if (val) {
+                    const [yyyy, mm, dd] = val.split("-");
+                    fechaFormateada = `${dd}-${mm}-${yyyy}`;
+                }
+                url = `http://127.0.0.1:8081/api/buscarReciboPerifericos/fecha/${fechaFormateada}`;
             }
 
             const tbody = document.getElementById('tablaResultados');

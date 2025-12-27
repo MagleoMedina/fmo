@@ -541,7 +541,13 @@
             if(input.value) seriales.push({ idTipoComponente: 4, marca: hddsMarcas[i].value, serial: input.value, capacidad: hddsCaps[i].value });
         });
 
-
+    // Obtener y formatear la fecha
+    const rawFecha = document.getElementById('fecha').value;
+    let fechaFormateada = "";
+    if (rawFecha) {
+        const [yyyy, mm, dd] = rawFecha.split("-");
+        fechaFormateada = `${dd}-${mm}-${yyyy}`;
+    }
         // --- 6. CONSTRUCCIÓN DEL PAYLOAD FINAL ---
         const payload = {
             clave: clave,
@@ -574,7 +580,7 @@
                     ],
                     estatus: document.getElementById('estatus').value,
                     falla: document.getElementById('falla').value,
-                    fecha: document.getElementById('fecha').value,
+                    fecha: fechaFormateada,
                     fmoEquipo: document.getElementById('fmoEquipo').value,
                     observacion: document.getElementById('observacion').value,
                     recibidoPor: document.getElementById('recibidoPor').value,

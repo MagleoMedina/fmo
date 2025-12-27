@@ -49,4 +49,14 @@ public class PerifericosController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscarReciboPerifericos/fecha/{fecha}")
+    public ResponseEntity<?> buscarReciboDePerifericosFecha(@PathVariable String fecha) {
+        try {
+            return ResponseEntity.ok(perifericosService.buscarPorFecha(fecha));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
 }

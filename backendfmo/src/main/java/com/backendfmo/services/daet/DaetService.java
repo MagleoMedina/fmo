@@ -1,6 +1,6 @@
 package com.backendfmo.services.daet;
 
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +110,7 @@ public List<BusquedaDaetDTO> listarTodoDAET() {
 }
 
 @Transactional(readOnly = true)
-public List<BusquedaDaetDTO> buscarPorSerialDaet2(String serial) {
+public List<BusquedaDaetDTO> buscarPorSerialDaet(String serial) {
     
     List<EntregasAlDAET> entregasEncontradas = entregasRepository.findByFmoSerial(serial);
 
