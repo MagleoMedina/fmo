@@ -456,13 +456,8 @@
             else if (filtro === 'fecha') {
                 const val = document.getElementById('inputBusquedaFecha').value;
                 if (!val) return alert("Seleccione una fecha");
-                let fechaFormateada = "";
-                if (val) {
-                    const [yyyy, mm, dd] = val.split("-");
-                    fechaFormateada = `${dd}-${mm}-${yyyy}`;
-                }
 
-                url = `http://127.0.0.1:8081/api/buscarReciboEquipos/fecha/${fechaFormateada}`;
+                url = `http://127.0.0.1:8081/api/buscarReciboEquipos/fecha/${val}`;
             }
             const tbody = document.getElementById('tablaResultados');
             tbody.innerHTML = '<tr><td colspan="5">Cargando...</td></tr>';

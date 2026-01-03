@@ -59,4 +59,13 @@ public class PerifericosController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
     }
+
+    @GetMapping("/buscarReciboPerifericos/rangoFechas/{fechaInicio}/{fechaFin}")
+    public ResponseEntity<?> buscarReciboDePerifericosRangoFechas(@PathVariable String fechaInicio, @PathVariable String fechaFin) {
+        try {
+            return ResponseEntity.ok(perifericosService.listarPorRangoDeFechas(fechaInicio, fechaFin));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
 }

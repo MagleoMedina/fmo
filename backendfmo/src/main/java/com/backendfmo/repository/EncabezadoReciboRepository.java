@@ -19,6 +19,9 @@ public interface EncabezadoReciboRepository extends JpaRepository<EncabezadoReci
     List<EncabezadoRecibo> findByFmoEquipo(String fmoEquipo);
 
     List<EncabezadoRecibo> findByFecha(String fecha);
+    
+    @Query("SELECT e FROM EncabezadoRecibo e WHERE e.fecha BETWEEN :fechaInicio AND :fechaFin")
+    List<EncabezadoRecibo> findByFechaBetween(String fechaInicio, String fechaFin);
 
 
 }

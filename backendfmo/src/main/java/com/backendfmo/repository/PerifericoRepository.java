@@ -15,4 +15,7 @@ public interface PerifericoRepository extends JpaRepository<Periferico,Long>{
     @Query("SELECT e FROM ReciboDePerifericos e WHERE e.encabezadoRelacion.fecha = :fecha")
     List<ReciboDePerifericos> findByFechaEncabezado(@Param("fecha") String fecha);
 
+    @Query("SELECT e FROM ReciboDePerifericos e WHERE e.encabezadoRelacion.fecha between :fechaInicio AND :fechaFin")
+    List<ReciboDePerifericos> findByFechaEncabezadoBetween(@Param("fechaInicio") String fechaInicio, @Param("fechaFin") String fechaFin);
+
 }

@@ -57,10 +57,11 @@ public class EntregasAlDAETController {
         return ResponseEntity.ok(daetService.buscarPorFecha(fecha));
     }
 
+    @GetMapping("/buscarEntregasAlDaet/rangoFechas/{fechaInicio}/{fechaFin}")
+    public ResponseEntity<?> buscarPorRangoDeFechas(@PathVariable String fechaInicio, @PathVariable String fechaFin) {
+        return ResponseEntity.ok(daetService.listarPorRangoDeFechas(fechaInicio, fechaFin));
+    }
 
- 
-
-    
 
     }
 

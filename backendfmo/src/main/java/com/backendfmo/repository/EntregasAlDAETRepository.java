@@ -20,4 +20,7 @@ public interface EntregasAlDAETRepository extends JpaRepository<EntregasAlDAET, 
 
     @Query("SELECT e FROM EntregasAlDAET e WHERE e.encabezadoRelacion.fecha = :fecha")
     List<EntregasAlDAET> findByFechaEncabezado(@Param("fecha") String fecha);
+
+    @Query("SELECT e FROM EntregasAlDAET e WHERE e.encabezadoRelacion.fecha between :fechaInicio AND :fechaFin")
+    List<EntregasAlDAET> findByFechaEncabezadoBetween(@Param("fechaInicio") String fechaInicio, @Param("fechaFin") String fechaFin);
 }

@@ -170,6 +170,27 @@ public List<BusquedaDaetDTO> buscarPorSerialDaet(String serial) {
 
         return respuesta;
     }
+
+    @Transactional(readOnly = true  )
+
+    public List<BusquedaDaetDTO> listarPorRangoDeFechas(String fechaInicio, String fechaFin) {
+        
+        // 1. Buscar en BD usando el repositorio
+        List<EntregasAlDAET> entregasEncontradas = entregasRepository.findByFechaEncabezadoBetween(fechaInicio, fechaFin);
+
+        if (entregasEncontradas.isEmpty()) {
+            throw new RuntimeException("No se encontraron registros entre las fechas: " + fechaInicio + " y " + fechaFin);
+        }
+
+        List<BusquedaDaetDTO> respuesta = new ArrayList<>();
+
+        // 2. Convertir cada entidad encontrada a DTO
+        for (EntregasAlDAET entrega : entregasEncontradas) {
+            respuesta.add(convertirEntidadADTO(entrega));
+        }
+
+        return respuesta;
+    }
 @Transactional
     public Usuario registrarEntregasDaet(RegistroDaetDTO dto) {
         // 1. Crear Usuario

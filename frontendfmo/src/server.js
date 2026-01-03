@@ -52,6 +52,10 @@ app.get('/busqueda/perifericos', (req, res) => {
     res.render('pages/busqueda-perifericos', { title: 'Búsqueda Periféricos' });
 });
 
+app.get('/exportar', (req, res) => {
+    res.render('pages/exportar-recibos', { title: 'Exportar Recibos' });
+});
+
 // Iniciar servidor
 const server = app.listen(PORT, () => {
     console.log(`Frontend Express corriendo en http://localhost:${PORT}`);

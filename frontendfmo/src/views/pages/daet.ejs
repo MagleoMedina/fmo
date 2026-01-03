@@ -425,18 +425,10 @@
         const getVal = (id) => document.getElementById(id)?.value || "";
 
         // --- CONSTRUCCIÓN DEL PAYLOAD FINAL ---
-
-    // Obtener y formatear la fecha
-    const rawFecha = document.getElementById('fecha').value;
-    let fechaFormateada = "";
-    if (rawFecha) {
-        const [yyyy, mm, dd] = rawFecha.split("-");
-        fechaFormateada = `${dd}-${mm}-${yyyy}`;
-    }
         const payload = {
             asignadoA: getVal('analista') || null,
             estatus: "En Proceso", 
-            fecha: fechaFormateada,
+            fecha: getVal("fecha"),
             ficha: getVal('fichaRecibido') || null,
             
             // FMO Equipo (Encabezado)

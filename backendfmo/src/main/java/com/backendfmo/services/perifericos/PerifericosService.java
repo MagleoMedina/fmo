@@ -173,6 +173,24 @@ public class PerifericosService {
             .map(this::convertirADTO) // Llamamos a un método auxiliar para limpiar el código
             .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<ReciboPerifericosDTO> listarPorRangoDeFechas(String fechaInicio, String fechaFinalizacion){
+        
+        // 1. Buscar TODOS los registros que coincidan con el serial
+        List<ReciboDePerifericos> resultados = perifericoRepository.findByFechaEncabezadoBetween(fechaInicio, fechaFinalizacion);
+
+        if (resultados.isEmpty()) {
+            throw new RuntimeException("No se encontraron registros de periféricos con esa fecha.");
+        }
+
+        // 2. Convertir cada resultado encontrado en un DTO
+        return resultados.stream()
+            .map(this::convertirADTO) // Llamamos a un método auxiliar para limpiar el código
+            .collect(Collectors.toList());
+    }
+
+
 // Método auxiliar corregido
     private ReciboPerifericosDTO convertirADTO(ReciboDePerifericos perifericoHijo) {
         ReciboPerifericosDTO response = new ReciboPerifericosDTO();

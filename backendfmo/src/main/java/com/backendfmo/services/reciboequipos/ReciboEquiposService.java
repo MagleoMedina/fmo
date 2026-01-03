@@ -255,11 +255,27 @@ public class ReciboEquiposService implements IReciboEquiposService {
         return respuestaLista;
     }
 
-       @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<BusquedaCompletaDTO> listarReciboDeEquiposPorFecha(String fecha) {
         
         // 1. Buscamos todos
         List<EncabezadoRecibo> todos = encabezadoRepository.findByFecha(fecha);
+        
+        List<BusquedaCompletaDTO> respuestaLista = new ArrayList<>();
+
+        // 2. Reutilizamos la lógica de conversión
+        for (EncabezadoRecibo encabezado : todos) {
+            respuestaLista.add(convertirEntidadADTO(encabezado));
+        }
+
+        return respuestaLista;
+    }
+
+    @Transactional(readOnly = true)
+    public List<BusquedaCompletaDTO> listarReciboDeEquiposPorRangoFechas(String fechaInicio, String fechaFin) {
+        
+        // 1. Buscamos todos
+        List<EncabezadoRecibo> todos = encabezadoRepository.findByFechaBetween(fechaInicio, fechaFin);
         
         List<BusquedaCompletaDTO> respuestaLista = new ArrayList<>();
 

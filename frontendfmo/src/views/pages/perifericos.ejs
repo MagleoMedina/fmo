@@ -366,13 +366,6 @@
             const getVal = (id) => document.getElementById(id)?.value || "";
 
             // 3. PAYLOAD
-                // Obtener y formatear la fecha
-    const rawFecha = document.getElementById('fecha').value;
-    let fechaFormateada = "";
-    if (rawFecha) {
-        const [yyyy, mm, dd] = rawFecha.split("-");
-        fechaFormateada = `${dd}-${mm}-${yyyy}`;
-    }
             const payload = {
                 usuario: getVal('usuario'),
                 ficha: parseInt(getVal('ficha')) || 0,
@@ -389,7 +382,7 @@
                 asignadoA: getVal('asignadoA'),
 
                 estatus: "Entregado", 
-                fecha: fechaFormateada,
+                fecha: getVal("fecha"),
                 
                 falla: getVal('falla'),
                 // Campo SERIAL GENERAL (Para periféricos o componentes)
