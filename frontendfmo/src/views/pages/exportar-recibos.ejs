@@ -21,10 +21,13 @@
 
         /* Estilo para el contenedor de impresión (lo que se convertirá en PDF) */
         #print-staging-area {
+            background-color: white;
             background: white;
             padding: 20px;
+            min-height: 100vh; 
+            overflow: visible !important;
         }
-        
+
         /* Salto de página para el PDF */
         .page-break {
             page-break-after: always;
@@ -32,6 +35,46 @@
             display: block;
             border-bottom: 2px dashed #ccc; /* Visual en staging */
         }
+
+   /* Ahora .pdf-compacto es el div padre que envuelve al .paper-form */
+    .pdf-compacto .paper-form {
+        max-width: 100% !important; /* Ocupar todo el ancho del wrapper */
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 auto !important;
+    }
+    .pdf-compacto {
+        background-color: white; /* Asegura fondo blanco */
+    }
+    
+    .pdf-compacto .label-text { font-size: 9px !important; }
+    
+    .pdf-compacto .input-line { 
+        font-size: 10px !important; 
+        height: 14px !important;
+        background: transparent !important;
+        color: #000 !important;
+    }
+    
+    .pdf-compacto .cell-border { 
+        padding: 1px 4px !important; 
+        min-height: 18px !important; 
+    }
+    
+    .pdf-compacto .row-compact { margin-bottom: 0 !important; }
+    
+    .pdf-compacto .form-check-input { 
+        width: 10px !important; 
+        height: 10px !important; 
+        margin-top: 1px !important; 
+        border: 1px solid #000 !important;
+    }
+
+    /* Ocultar botones o elementos extraños dentro del PDF */
+    .pdf-compacto button, 
+    .pdf-compacto .modal-footer {
+        display: none !important;
+    }
     </style>
 </head>
 <body>
@@ -85,25 +128,13 @@
         </div>
     </div>
 
-    <div id="templates-container">
-        
-        <div id="template-equipos-wrapper">
-            <%- include('../partials/forms/template-equipos') %>
-        </div>
+<div id="templates-container" style="display:none;">
+    <div id="template-equipos-wrapper"><%- include('../partials/forms/template-equipos') %></div>
+    <div id="template-perifericos-wrapper"><%- include('../partials/forms/template-perifericos') %></div>
+    <div id="template-daet-wrapper"><%- include('../partials/forms/template-daet') %></div>
+</div>
 
-        <div id="template-perifericos-wrapper">
-            <%- include('../partials/forms/template-perifericos') %>
-        </div>
-
-        <div id="template-daet-wrapper">
-            <%- include('../partials/forms/template-daet') %>
-        </div>
-
-    </div>
-
-    <div id="print-staging-area" style="display:none;"></div>
-
-    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/js/html2pdf.bundle.min.js"></script>
     
     <script src="/js/mappings.js"></script> 
@@ -128,19 +159,16 @@
                 // 1. Fetch a tu API de rango (Ajusta tus rutas)
                 // Ej: /api/recibo-equipos/rango?inicio=...&fin=...
                 let url = '';
-                if(tipo === 'equipos') url = `/api/buscarReciboEquipos/rango?inicio=${inicio}&fin=${fin}`;
+                if(tipo === 'equipos') url = `http://127.0.0.1:8081/api/buscarReciboEquipos/rangoFechas/${inicio}/${fin}`;
                 else if(tipo === 'perifericos') url = `/api/buscarReciboPerifericos/rango?inicio=${inicio}&fin=${fin}`;
                 else if(tipo === 'daet') url = `/api/buscarEntregasAlDaet/rango?inicio=${inicio}&fin=${fin}`;
 
                 try {
                     document.getElementById('statusArea').innerHTML = '<div class="alert alert-info">Cargando datos...</div>';
                     
-                    // const res = await fetch(url); 
-                    // const data = await res.json();
-                    
-                    // --- DATA MOCK (PARA PROBAR SIN BACKEND AÚN) ---
-                    // Borrar esto cuando tengas el endpoint
-                    const data = []; // Aquí vendría tu array de objetos
+                    const res = await fetch(url); 
+                    const data = await res.json();
+                    console.log(data);
                     
                     if(data.length === 0) {
                         document.getElementById('statusArea').innerHTML = '<div class="alert alert-warning">No hay registros en ese rango.</div>';
@@ -163,5 +191,9 @@
             }
         }
     </script>
+<div id="print-staging-area"></div>
+
 </body>
+
+    
 </html>
