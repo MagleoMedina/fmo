@@ -203,7 +203,24 @@
                     alert("Error al exportar");
                 }
             } else {
-                alert("Lógica CSV pendiente");
+               // Como es una descarga directa de archivo, usamos window.location o un enlace oculto.
+        // Asumiendo que quieres un reporte general unificado o dependiendo del tipo:
+        if(!inicio || !fin) return alert("Seleccione el rango de fechas para el archivo CSV");
+
+        let url = `http://127.0.0.1:8081/api/exportarCsv/${inicio}/${fin}`;
+        
+        // Si necesitas diferenciar tipos en el CSV, deberías mandar el tipo al backend también:
+        // let url = `http://.../api/exportar/csv?tipo=${tipo}&inicio=${inicio}&fin=${fin}`;
+
+        // Truco para descargar sin cambiar de página:
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', ''); // El nombre lo pone el backend (Content-Disposition)
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        document.getElementById('statusArea').innerHTML = '<div class="alert alert-success">Descarga CSV iniciada.</div>';
             }
         }
     </script>
