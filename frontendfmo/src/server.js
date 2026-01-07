@@ -111,6 +111,9 @@ app.get('/health', async (req, res) => {
     }
 });
 
+app.get('/stock', (req, res) => {
+    res.render('pages/stock', { title: 'Stock e Inventario' });
+});
 // Iniciar servidor
 const server = app.listen(PORT, () => {
     console.log(`Frontend Express corriendo en http://localhost:${PORT}`);

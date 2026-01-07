@@ -173,6 +173,26 @@ CREATE TABLE IF NOT EXISTS aplicaciones_recibo_equipos (
 	FOREIGN KEY(recibo_de_equipos) REFERENCES recibo_de_equipos(id) ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS control_stock (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    -- Eliminamos id_referencia y usamos dos columnas especificas
+    perifericos INTEGER, 
+    componentes_computadora_internos INTEGER,
+    categoria TEXT, -- Opcional, pero útil para filtrado rápido
+    marca TEXT,
+    cantidad INTEGER DEFAULT 0,
+    fecha_actualizacion TEXT DEFAULT CURRENT_TIMESTAMP,
+    -- RELACIONES REALES (Integridad de datos)
+    FOREIGN KEY("componentes_computadora_internos") REFERENCES componentes_computadora_internos(id) ON UPDATE CASCADE,
+    FOREIGN KEY("perifericos") REFERENCES perifericos(id) ON UPDATE CASCADE,
+
+    -- CONSTRAINT (Regla): O tiene componente O tiene periférico, no ambos, no ninguno.
+    CONSTRAINT check_tipo_item CHECK (
+        ("componentes_computadora_internos" IS NOT NULL AND "perifericos" IS NULL) OR 
+        ("componentes_computadora_internos" IS NULL AND "perifericos" IS NOT NULL)
+    )
+);
+
 INSERT INTO "perifericos" ("id","nombre") VALUES (1,'MONITOR');
 INSERT INTO "perifericos" ("id","nombre") VALUES (2,'TECLADO');
 INSERT INTO "perifericos" ("id","nombre") VALUES (3,'MOUSE');
