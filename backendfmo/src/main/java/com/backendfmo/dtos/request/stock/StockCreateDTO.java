@@ -9,4 +9,5 @@ public class StockCreateDTO {
     private String marca;
     private Integer cantidad;
     private Integer minimoAlerta;
+    private String caracteristicas;
 }

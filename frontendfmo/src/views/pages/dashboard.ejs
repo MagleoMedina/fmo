@@ -173,22 +173,22 @@
                 // Ejemplo con 4 llamadas separadas:
 
                 // 1. Equipos
-                const resEquipos = await fetch('http://127.0.0.1:8081/api/stats/equipos-atendidos');
+                const resEquipos = await fetch('http://127.0.0.1:8081/api/contador/reciboDeEquipos');
                 const dataEquipos = await resEquipos.json(); // Se asume devuelve un entero, ej: 45
                 animarNumero('numEquipos', dataEquipos);
 
                 // 2. Periféricos
-                const resPeri = await fetch('http://127.0.0.1:8081/api/stats/perifericos-atendidos');
+                const resPeri = await fetch('http://127.0.0.1:8081/api/contador/reciboDePerifericos');
                 const dataPeri = await resPeri.json();
                 animarNumero('numPerifericos', dataPeri);
 
                 // 3. DAET
-                const resDaet = await fetch('http://127.0.0.1:8081/api/stats/daet-atendidos');
+                const resDaet = await fetch('http://127.0.0.1:8081/api/contador/entregasAlDaet');
                 const dataDaet = await resDaet.json();
                 animarNumero('numDaet', dataDaet);
 
                 // 4. Pendientes
-                const resPend = await fetch('http://127.0.0.1:8081/api/stats/pendientes');
+                const resPend = await fetch('http://127.0.0.1:8081/api/contador/pendientes');
                 const dataPend = await resPend.json();
                 animarNumero('numPendientes', dataPend);
 

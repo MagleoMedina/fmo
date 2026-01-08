@@ -17,14 +17,22 @@ import com.backendfmo.dtos.request.stock.StockCreateDTO;
 import com.backendfmo.dtos.request.stock.StockDTO;
 import com.backendfmo.models.stock.ControlStock;
 import com.backendfmo.services.stock.ControlStockServiceImpl;
+import com.backendfmo.repository.ComponenteInternoRepository;
+import com.backendfmo.repository.PerifericoRepository;
 
 @RestController
-@RequestMapping("/api/stock")
+@RequestMapping("/stock")
 @CrossOrigin("*") // Permitir peticiones desde Node.js
 public class ControlStockController {
 
     @Autowired
     private ControlStockServiceImpl stockService;
+
+    @Autowired
+    private ComponenteInternoRepository componenteRepository;
+
+    @Autowired
+    private PerifericoRepository perifericoRepository;
 
     // GET /api/stock -> Devuelve la lista completa formateada
     @GetMapping
@@ -53,4 +61,16 @@ public class ControlStockController {
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/componentes")
+    public ResponseEntity<?> listarComponentes(){
+
+        return ResponseEntity.ok(componenteRepository.findAll());
+    }
+
+     @GetMapping("/perifericos")
+     public ResponseEntity<?> listarPerifericos(){
+
+        return ResponseEntity.ok(perifericoRepository.findAll());
+    }
+
 }

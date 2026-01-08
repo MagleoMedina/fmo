@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -41,7 +42,11 @@ public class ControlStock {
     @Column(name="categoria")
     private String categoria;
 
+    @Transient
     private Integer minimoAlerta;
+
+    @Column(name = "caracteristicas", length = 500)
+    private String caracteristicas;
     
     // Método auxiliar para obtener el nombre sin importar qué sea
     public String getNombreItem() {

@@ -182,6 +182,7 @@ CREATE TABLE IF NOT EXISTS control_stock (
     marca TEXT,
     cantidad INTEGER DEFAULT 0,
     fecha_actualizacion TEXT DEFAULT CURRENT_TIMESTAMP,
+	caracteristicas TEXT,
     -- RELACIONES REALES (Integridad de datos)
     FOREIGN KEY("componentes_computadora_internos") REFERENCES componentes_computadora_internos(id) ON UPDATE CASCADE,
     FOREIGN KEY("perifericos") REFERENCES perifericos(id) ON UPDATE CASCADE,

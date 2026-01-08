@@ -74,11 +74,11 @@
             
             <div class="d-flex justify-content-between align-items-center mb-4 fade-in">
                 <div>
-                    <h4 class="m-0 fw-bold text-dark">📦 Control de Stock y Repuestos</h4>
+                    <h4 class="m-0 fw-bold text-dark">📋 Control de Stock y Repuestos</h4>
                     <p class="text-muted small m-0">Gestiona las entradas y salidas de material.</p>
                 </div>
                 <button class="btn btn-primary shadow-sm" onclick="abrirModalAgregar()">
-                    <i class="fas fa-plus"></i> ✨ Agregar Nuevo Item
+                    <i class="fas fa-plus"></i> ➕ Agregar Nuevo Item
                 </button>
             </div>
 
@@ -91,17 +91,6 @@
                                 <h2 class="fw-bold text-primary mb-0" id="totalItems">0</h2>
                             </div>
                             <div class="icon-bg text-primary">📊</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card stock-card bg-white shadow-sm p-3 h-100">
-                        <div class="d-flex justify-content-between align-items-center position-relative z-1">
-                            <div>
-                                <h6 class="text-muted text-uppercase fw-bold" style="font-size: 0.8rem;">Valor Aprox.</h6>
-                                <h2 class="fw-bold text-success mb-0">Inventario</h2>
-                            </div>
-                            <div class="icon-bg text-success">💲</div>
                         </div>
                     </div>
                 </div>
@@ -143,7 +132,7 @@
                                     <thead>
                                         <tr>
                                             <th>Item</th>
-                                            <th>Marca / Modelo</th>
+                                            <th>Marca / Caracteristicas</th>
                                             <th class="text-center">Stock Actual</th>
                                             <th class="text-center">Estado</th>
                                             <th class="text-center">Acciones</th>
@@ -193,8 +182,8 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Categoría:</label>
                             <select class="form-select" id="selCategoria" onchange="cargarListaItems()">
-                                <option value="COMPONENTE">Componente Interno (RAM, Disco, etc.)</option>
-                                <option value="PERIFERICO">Periférico (Mouse, Teclado, etc.)</option>
+                                <option value="COMPONENTE">Componentes Internos (RAM, Disco, etc.)</option>
+                                <option value="PERIFERICO">Periféricos (Mouse, Teclado, etc.)</option>
                             </select>
                         </div>
 
@@ -239,151 +228,214 @@
 
     <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script>
-        // --- VARIABLES GLOBALES (SIMULANDO DATOS DE BACKEND) ---
-        // En producción, estas listas vendrían de tus endpoints: /api/componentes y /api/perifericos
-        let listaComponentesDB = []; 
-        let listaPerifericosDB = [];
-        
-        // --- 1. CARGA INICIAL ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            await cargarCatalogos(); // Cargar listas desplegables
-            cargarStock();           // Cargar tabla principal
-        });
+    // URL Base de tu API Spring Boot
+    const API_URL = 'http://127.0.0.1:8081/api/stock';
 
-        // Simulación de carga de catálogos (Rellena esto con fetch a tu API)
-        async function cargarCatalogos() {
-            try {
-                // Fetch real a tus endpoints existentes
-                // const resComp = await fetch('/api/componentes'); listaComponentesDB = await resComp.json();
-                // const resPeri = await fetch('/api/perifericos'); listaPerifericosDB = await resPeri.json();
-                
-                // DATA MOCK TEMPORAL PARA QUE FUNCIONE LA VISTA YA
-                listaComponentesDB = [
-                    {id: 3, nombre: 'MEMORIA RAM'}, {id: 4, nombre: 'DISCO DURO'}, 
-                    {id: 5, nombre: 'TARJETA MADRE'}, {id: 8, nombre: 'FUENTE DE PODER'}
-                ];
-                listaPerifericosDB = [
-                    {id: 1, nombre: 'MONITOR'}, {id: 2, nombre: 'TECLADO'}, 
-                    {id: 3, nombre: 'MOUSE'}, {id: 4, nombre: 'REGULADOR'}
-                ];
-                
-                cargarListaItems(); // Refrescar select del modal
-            } catch (e) { console.error("Error cargando catálogos", e); }
-        }
+    // Almacenes temporales para los selectores del modal
+    let listaComponentesDB = [];
+    let listaPerifericosDB = [];
 
-        // --- 2. LÓGICA DEL MODAL ---
-        function abrirModalAgregar() {
-            document.getElementById('formStock').reset();
+    // --- 1. CARGA INICIAL ---
+    document.addEventListener('DOMContentLoaded', async () => {
+        await cargarCatalogos(); // Llenar las listas desplegables
+        cargarStock();           // Llenar la tabla principal
+    });
+
+    // --- 2. CARGAR CATÁLOGOS (Para el Modal) ---
+    async function cargarCatalogos() {
+        try {
+            // Hacemos las dos peticiones en paralelo para ser más rápidos
+            const [resComp, resPeri] = await Promise.all([
+                fetch(`${API_URL}/componentes`),
+                fetch(`${API_URL}/perifericos`) // Asumiendo que creaste este endpoint similar al de componentes
+            ]);
+
+            if (resComp.ok) listaComponentesDB = await resComp.json();
+            if (resPeri.ok) listaPerifericosDB = await resPeri.json();
+
+            // Inicializar el select
             cargarListaItems();
-            new bootstrap.Modal(document.getElementById('modalStock')).show();
+        } catch (error) {
+            console.error("Error cargando catálogos del sistema:", error);
+            alert("Error de conexión al cargar listas de items.");
+        }
+    }
+
+    // --- 3. LOGICA DEL MODAL (Dinámico) ---
+    function abrirModalAgregar() {
+        document.getElementById('formStock').reset();
+        // Resetear selectores
+        document.getElementById('selCategoria').value = "COMPONENTE";
+        cargarListaItems();
+        new bootstrap.Modal(document.getElementById('modalStock')).show();
+    }
+
+    // Llena el segundo select basado en la categoría elegida
+    function cargarListaItems() {
+        const categoria = document.getElementById('selCategoria').value;
+        const select = document.getElementById('selReferencia');
+        select.innerHTML = '<option value="">Seleccione...</option>';
+
+        // Elegimos la lista correcta
+        let datos = (categoria === 'COMPONENTE') ? listaComponentesDB : listaPerifericosDB;
+
+        datos.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id; // Este ID se enviará como 'idReferencia'
+            opt.textContent = item.nombre;
+            select.appendChild(opt);
+        });
+    }
+
+    // --- 4. GUARDAR NUEVO STOCK (POST) ---
+    async function guardarNuevoStock() {
+        // Construimos el Payload igual al StockCreateDTO de Java
+        const payload = {
+            categoria: document.getElementById('selCategoria').value,
+            idReferencia: parseInt(document.getElementById('selReferencia').value),
+            marca: document.getElementById('inputMarca').value,
+            caracteristicas: document.getElementById('inputModelo').value,
+            cantidad: parseInt(document.getElementById('inputCantidad').value),
+            minimoAlerta: parseInt(document.getElementById('inputMinimo').value)
+        };
+
+        // Validaciones básicas
+        if(!payload.idReferencia || !payload.marca || isNaN(payload.cantidad) || payload.cantidad < 0) {
+            return alert("Por favor complete todos los campos correctamente.");
         }
 
-        function cargarListaItems() {
-            const categoria = document.getElementById('selCategoria').value;
-            const select = document.getElementById('selReferencia');
-            select.innerHTML = '<option value="">Seleccione...</option>';
-
-            let datos = (categoria === 'COMPONENTE') ? listaComponentesDB : listaPerifericosDB;
-
-            datos.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.id;
-                opt.textContent = item.nombre;
-                select.appendChild(opt);
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
+
+            if (res.ok) {
+                alert("✅ Item agregado al inventario exitosamente.");
+                // Cerrar modal y recargar
+                bootstrap.Modal.getInstance(document.getElementById('modalStock')).hide();
+                cargarStock();
+            } else {
+                alert("❌ Error al guardar. Verifique los datos.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error de conexión con el servidor.");
         }
+    }
 
-        async function guardarNuevoStock() {
-            // Recoger datos
-            const payload = {
-                categoria: document.getElementById('selCategoria').value,
-                idReferencia: document.getElementById('selReferencia').value,
-                marca: document.getElementById('inputMarca').value,
-                modelo: document.getElementById('inputModelo').value,
-                cantidad: parseInt(document.getElementById('inputCantidad').value),
-                minimoAlerta: parseInt(document.getElementById('inputMinimo').value)
-            };
+    // --- 5. CARGAR TABLA DE STOCK (GET) ---
+    async function cargarStock() {
+        const tbodyComp = document.getElementById('tablaComponentes');
+        const tbodyPeri = document.getElementById('tablaPerifericos');
 
-            if(!payload.idReferencia || !payload.marca || payload.cantidad < 1) return alert("Complete los datos");
+        // Limpieza visual antes de cargar
+        tbodyComp.innerHTML = '<tr><td colspan="5" class="text-center">Cargando...</td></tr>';
+        tbodyPeri.innerHTML = '<tr><td colspan="5" class="text-center">Cargando...</td></tr>';
 
-            // AQUÍ HARÍAS EL POST A TU BACKEND
-            // await fetch('/api/stock', { method: 'POST', body: JSON.stringify(payload) ... });
+        try {
+            const res = await fetch(API_URL);
+            if(!res.ok) throw new Error("Fallo al obtener stock");
 
-            alert("Item agregado correctamente");
-            bootstrap.Modal.getInstance(document.getElementById('modalStock')).hide();
-            cargarStock(); // Recargar tabla
-        }
+            const data = await res.json(); // Array de StockDTO
+            console.log(data);
 
-        // --- 3. LÓGICA DE TABLAS Y RENDERIZADO ---
-        async function cargarStock() {
-            // Simulamos datos que vendrían de SELECT * FROM control_stock
-            // Debes hacer un JOIN en el backend para traer el nombre del componente/periférico
-            const mockStock = [
-                { id: 1, categoria: 'COMPONENTE', nombreItem: 'MEMORIA RAM', marca: 'Kingston', modelo: '8GB DDR4', cantidad: 12, minimo: 5 },
-                { id: 2, categoria: 'COMPONENTE', nombreItem: 'DISCO DURO', marca: 'Western Digital', modelo: '1TB HDD', cantidad: 2, minimo: 5 },
-                { id: 3, categoria: 'PERIFERICO', nombreItem: 'MOUSE', marca: 'Genius', modelo: 'USB Óptico', cantidad: 20, minimo: 10 },
-                { id: 4, categoria: 'PERIFERICO', nombreItem: 'TECLADO', marca: 'Logitech', modelo: 'K120', cantidad: 4, minimo: 5 }
-            ];
-
-            const tbodyComp = document.getElementById('tablaComponentes');
-            const tbodyPeri = document.getElementById('tablaPerifericos');
-            tbodyComp.innerHTML = ''; 
+            // Limpiar para llenar
+            tbodyComp.innerHTML = '';
             tbodyPeri.innerHTML = '';
 
             let totalItems = 0;
             let totalCritico = 0;
 
-            mockStock.forEach(item => {
-                totalItems += item.cantidad;
-                
-                // Determinar estado
-                let estadoHtml = '<span class="badge bg-success">En Stock</span>';
-                if (item.cantidad === 0) estadoHtml = '<span class="badge bg-danger">Agotado</span>';
-                else if (item.cantidad <= item.minimo) {
-                    estadoHtml = '<span class="badge badge-low-stock">Stock Bajo</span>';
-                    totalCritico++;
-                }
+            if (data.length === 0) {
+                tbodyComp.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay stock registrado.</td></tr>';
+                tbodyPeri.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No hay stock registrado.</td></tr>';
+                actualizarResumen(0, 0);
+                return;
+            }
 
+            data.forEach(item => {
+                // Actualizar contadores
+                totalItems += item.cantidad;
+                if (item.estado === 'BAJO' || item.estado === 'AGOTADO') totalCritico++;
+
+                // Generar HTML del estado
+                let estadoHtml = '<span class="badge bg-success">En Stock</span>';
+                if (item.estado === 'AGOTADO') estadoHtml = '<span class="badge bg-danger">Agotado</span>';
+                else if (item.estado === 'BAJO') estadoHtml = '<span class="badge badge-low-stock">Stock Bajo</span>';
+
+                // Fila de la tabla
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="fw-bold text-primary">${item.nombreItem}</td>
                     <td>
-                        <div class="fw-bold">${item.marca}</div>
-                        <small class="text-muted">${item.modelo}</small>
+                        <div class="fw-bold text-dark">${item.marca}</div>
+                        <small class="text-muted">${item.caracteristicas}</small>
                     </td>
                     <td class="text-center">
-                        <span class="fs-5 fw-bold">${item.cantidad}</span>
+                        <span class="fs-5 fw-bold ${item.cantidad === 0 ? 'text-danger' : 'text-dark'}">${item.cantidad}</span>
                     </td>
                     <td class="text-center">${estadoHtml}</td>
                     <td class="text-center">
-                        <button class="btn btn-outline-danger btn-circle btn-sm me-1" onclick="modificarStock(${item.id}, -1)" title="Usar/Retirar">
+                        <button class="btn btn-outline-danger btn-circle btn-sm me-1"
+                                onclick="modificarStock(${item.id}, -1)"
+                                ${item.cantidad === 0 ? 'disabled' : ''}
+                                title="Retirar 1">
                             <i class="fas fa-minus">-</i>
                         </button>
-                        <button class="btn btn-outline-success btn-circle btn-sm" onclick="modificarStock(${item.id}, 1)" title="Agregar">
+                        <button class="btn btn-outline-success btn-circle btn-sm"
+                                onclick="modificarStock(${item.id}, 1)"
+                                title="Agregar 1">
                             <i class="fas fa-plus">+</i>
                         </button>
                     </td>
                 `;
 
-                if (item.categoria === 'COMPONENTE') tbodyComp.appendChild(tr);
-                else tbodyPeri.appendChild(tr);
+                // Distribuir en la pestaña correcta usando el campo 'categoria' del DTO
+                if (item.categoria === 'COMPONENTE') {
+                    tbodyComp.appendChild(tr);
+                } else {
+                    tbodyPeri.appendChild(tr);
+                }
             });
 
-            // Actualizar tarjetas
-            document.getElementById('totalItems').innerText = totalItems;
-            document.getElementById('totalCritico').innerText = totalCritico;
-        }
+            actualizarResumen(totalItems, totalCritico);
 
-        // --- 4. MODIFICAR STOCK (USAR O REPONER) ---
-        async function modificarStock(id, cantidad) {
-            // Esta función llama al backend para sumar o restar 1
-            // await fetch(`/api/stock/${id}/ajustar?cantidad=${cantidad}`, { method: 'POST' });
-            
-            console.log(`Ajustando item ${id} en ${cantidad}`);
-            // Recargamos para ver cambios (Simulado)
-            alert("Stock actualizado (Simulación)");
-            cargarStock();
+        } catch (error) {
+            console.error(error);
+            tbodyComp.innerHTML = '<tr><td colspan="5" class="text-danger text-center">Error de conexión.</td></tr>';
+            tbodyPeri.innerHTML = '<tr><td colspan="5" class="text-danger text-center">Error de conexión.</td></tr>';
         }
-    </script>
+    }
+
+    // --- 6. MODIFICAR STOCK (Ajuste rápido) ---
+    async function modificarStock(id, cantidad) {
+        try {
+            // Usamos el endpoint específico de ajuste
+            const res = await fetch(`${API_URL}/stock/${id}/ajustar?cantidad=${cantidad}`, {
+                method: 'POST'
+            });
+
+            if (res.ok) {
+                // Recargar la tabla silenciosamente para ver el cambio
+                cargarStock();
+            } else {
+                alert("No se pudo actualizar el stock.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Error de red.");
+        }
+    }
+
+    // --- Helper: Actualizar Tarjetas Superiores ---
+    function actualizarResumen(total, critico) {
+        // Animación simple de números
+        document.getElementById('totalItems').innerText = total;
+        document.getElementById('totalCritico').innerText = critico;
+    }
+
+</script>
 </body>
 </html>
