@@ -19,7 +19,7 @@ import com.backendfmo.models.stock.ControlStock;
 import com.backendfmo.services.stock.ControlStockServiceImpl;
 
 @RestController
-@RequestMapping("/api/stock")
+@RequestMapping("/stock")
 @CrossOrigin("*") // Permitir peticiones desde Node.js
 public class ControlStockController {
 

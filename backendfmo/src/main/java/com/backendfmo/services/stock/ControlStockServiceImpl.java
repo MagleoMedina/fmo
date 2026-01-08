@@ -37,6 +37,7 @@ public class ControlStockServiceImpl {
         ControlStock stock = new ControlStock();
         stock.setMarca(dto.getMarca());
         stock.setCantidad(dto.getCantidad());
+        stock.setCaracteristicas(dto.getCaracteristicas());
         stock.setMinimoAlerta(5);
 
         // Lógica para decidir dónde guardar la relación
@@ -73,6 +74,7 @@ public class ControlStockServiceImpl {
         dto.setId(entidad.getId());
         dto.setMarca(entidad.getMarca());
         dto.setCantidad(entidad.getCantidad());
+        dto.setCaracteristicas(entidad.getCaracteristicas());
         dto.setMinimoAlerta(5);
 
         // Determinar nombre y categoría basado en cuál relación no es nula

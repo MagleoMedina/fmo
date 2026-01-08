@@ -9,6 +9,7 @@ public class StockDTO {
     private String categoria;   // "COMPONENTE" o "PERIFERICO"
     private String nombreItem;  // Ej: "MEMORIA RAM"
     private String marca;
+    private String caracteristicas;
     private Integer cantidad;
     private Integer minimoAlerta;
     private String estado;
