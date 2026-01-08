@@ -150,7 +150,7 @@
                                     <thead>
                                         <tr>
                                             <th>Item</th>
-                                            <th>Marca / Modelo</th>
+                                            <th>Marca / Caracteristicas</th>
                                             <th class="text-center">Stock Actual</th>
                                             <th class="text-center">Estado</th>
                                             <th class="text-center">Acciones</th>
@@ -201,7 +201,7 @@
                                 <input type="text" class="form-control" id="inputMarca" placeholder="Ej: Kingston" required>
                             </div>
                             <div class="col-6">
-                                <label class="form-label fw-bold">Modelo/Capacidad:</label>
+                                <label class="form-label fw-bold">Modelo/Caracteristicas:</label>
                                 <input type="text" class="form-control" id="inputModelo" placeholder="Ej: 8GB DDR4" required>
                             </div>
                         </div>
@@ -210,12 +210,6 @@
                             <label class="form-label fw-bold">Cantidad Inicial:</label>
                             <input type="number" class="form-control" id="inputCantidad" value="1" min="1" required>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label small">Alerta de Stock Bajo (Mínimo):</label>
-                            <input type="number" class="form-control form-control-sm" id="inputMinimo" value="5">
-                        </div>
-
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -280,24 +274,34 @@
         let datos = (categoria === 'COMPONENTE') ? listaComponentesDB : listaPerifericosDB;
 
         datos.forEach(item => {
+            // --- FILTRO SOLICITADO ---
+            // Si es componente, excluimos Windows y Canaima (Sistemas Operativos)
+            if (categoria === 'COMPONENTE') {
+                const nombreUpper = (item.nombre || "").toUpperCase();
+                if (nombreUpper.includes("WINDOWS") || nombreUpper.includes("CANAIMA")) {
+                    return; // No lo agregamos al select
+                }
+            }
+            // -------------------------
+
             const opt = document.createElement('option');
             opt.value = item.id; // Este ID se enviará como 'idReferencia'
             opt.textContent = item.nombre;
             select.appendChild(opt);
         });
     }
-
     // --- 4. GUARDAR NUEVO STOCK (POST) ---
     async function guardarNuevoStock() {
         // Construimos el Payload igual al StockCreateDTO de Java
+        const MINIMO_ALERTA = 5;
         const payload = {
             categoria: document.getElementById('selCategoria').value,
             idReferencia: parseInt(document.getElementById('selReferencia').value),
             marca: document.getElementById('inputMarca').value,
             caracteristicas: document.getElementById('inputModelo').value,
             cantidad: parseInt(document.getElementById('inputCantidad').value),
-            minimoAlerta: parseInt(document.getElementById('inputMinimo').value)
-        };
+            minimoAlerta: MINIMO_ALERTA,
+        }
 
         // Validaciones básicas
         if(!payload.idReferencia || !payload.marca || isNaN(payload.cantidad) || payload.cantidad < 0) {
@@ -413,7 +417,7 @@
     async function modificarStock(id, cantidad) {
         try {
             // Usamos el endpoint específico de ajuste
-            const res = await fetch(`${API_URL}/stock/${id}/ajustar?cantidad=${cantidad}`, {
+            const res = await fetch(`${API_URL}/${id}/ajustar?cantidad=${cantidad}`, {
                 method: 'POST'
             });
 

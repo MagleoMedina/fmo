@@ -185,6 +185,7 @@
                 // 3. DAET
                 const resDaet = await fetch('http://127.0.0.1:8081/api/contador/entregasAlDaet');
                 const dataDaet = await resDaet.json();
+                console.log(dataDaet);
                 animarNumero('numDaet', dataDaet);
 
                 // 4. Pendientes

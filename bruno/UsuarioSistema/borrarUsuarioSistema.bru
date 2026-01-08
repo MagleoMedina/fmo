@@ -1,0 +1,15 @@
+meta {
+  name: borrarUsuarioSistema
+  type: http
+  seq: 4
+}
+
+delete {
+  url: 127.0.0.1:8081/api/usuarioSistema/borrar/{id}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

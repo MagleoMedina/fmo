@@ -11,6 +11,7 @@ public interface IUsuarioSistemaService {
     URI createUri(String path, UsuarioSistema s);
     UsuarioSistema saveUsuarioSistema(UsuarioSistema s);
     UsuarioSistema findUsuarioSistemaById(Integer i);
+    void deleteUsuarioSistema(Integer id);
 
 
 

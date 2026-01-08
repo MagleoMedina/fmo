@@ -48,4 +48,9 @@ public class UsuarioSistemaServiceImpl implements IUsuarioSistemaService {
        
         return usuarioSistemaRepository.findById(id).orElseThrow();
     }
+
+    public void deleteUsuarioSistema(Integer id){
+        usuarioSistemaRepository.deleteById(id);
+        
+    }
 }

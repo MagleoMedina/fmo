@@ -59,7 +59,7 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Contraseña:</label>
-                            <input type="password" class="form-control" id="inputClave" placeholder="******" required>
+                            <input type="text" class="form-control" id="inputClave" placeholder="******" required>
                         </div>
 
                         <div class="mb-3">
@@ -79,28 +79,72 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalNotificacion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header text-white" id="headerNotificacion">
+                    <h5 class="modal-title fw-bold" id="tituloNotificacion">Notificación</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div id="iconoNotificacion" class="mb-3" style="font-size: 3.5rem;"></div>
+                    <p id="mensajeNotificacion" class="mb-0 fs-5 fw-medium text-secondary"></p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
 
     <script>
-        // URL Base de tu API Java (Ajusta el puerto si es necesario)
-        const API_URL = 'http://127.0.0.1:8081/api/usuarios';
 
-        // Al cargar la página
+     function mostrarNotificacion(titulo, mensaje, tipo) {
+            const modalEl = document.getElementById('modalNotificacion');
+            const header = document.getElementById('headerNotificacion');
+            const tituloEl = document.getElementById('tituloNotificacion');
+            const msgEl = document.getElementById('mensajeNotificacion');
+            const iconoEl = document.getElementById('iconoNotificacion');
+
+            // 1. Configurar Textos
+            tituloEl.innerText = titulo;
+            msgEl.innerText = mensaje;
+
+            // 2. Configurar Estilos según el tipo
+            header.className = 'modal-header text-white'; // Reset
+            
+            if (tipo === 'exito') {
+                header.classList.add('bg-success');
+                iconoEl.innerHTML = '✅'; 
+            } else if (tipo === 'error') {
+                header.classList.add('bg-danger');
+                iconoEl.innerHTML = '❌'; 
+            } else {
+                header.classList.add('bg-primary');
+                iconoEl.innerHTML = 'ℹ️'; 
+            }
+
+            // 3. Mostrar Modal
+            new bootstrap.Modal(modalEl).show();
+        }
+
+        // --- LÓGICA PRINCIPAL ---
+
         document.addEventListener('DOMContentLoaded', () => {
             listarUsuarios();
         });
 
-        // --- 1. LISTAR USUARIOS (GET) ---
+        // 1. LISTAR
         async function listarUsuarios() {
             const tbody = document.getElementById('tablaUsuarios');
             try {
-                const res = await fetch(API_URL);
+                const res = await fetch("http://127.0.0.1:8081/api/usuarioSistema");
                 if(!res.ok) throw new Error("Error al obtener usuarios");
                 const usuarios = await res.json();
 
                 tbody.innerHTML = '';
-                
                 if(usuarios.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-muted">No hay usuarios registrados.</td></tr>';
                     return;
@@ -120,69 +164,71 @@
                     `;
                     tbody.appendChild(tr);
                 });
-
             } catch (error) {
                 console.error(error);
                 tbody.innerHTML = `<tr><td colspan="4" class="text-danger">Error de conexión con el servidor.</td></tr>`;
             }
         }
 
-        // --- 2. CREAR USUARIO (POST) ---
+        // 2. CREAR
         async function guardarUsuario() {
             const username = document.getElementById('inputUsername').value;
             const clave = document.getElementById('inputClave').value;
             const tipo = document.getElementById('selectTipo').value;
 
-            if(!username || !clave) return alert("Por favor complete todos los campos.");
+            if(!username || !clave) {
+                mostrarNotificacion("Datos Incompletos", "Por favor complete todos los campos.", "error");
+                return;
+            }
 
-            const nuevoUsuario = {
-                username: username,
-                clave: clave, // Nota: El backend debería encriptar esto
-                tipo: tipo
-            };
+            const nuevoUsuario = { username, clave, tipo };
 
             try {
-                const res = await fetch(API_URL, {
+                const res = await fetch("http://127.0.0.1:8081/api/crearUsuarioSistema", {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(nuevoUsuario)
                 });
 
                 if(res.ok) {
-                    alert("Usuario creado exitosamente");
-                    document.getElementById('formUsuario').reset(); // Limpiar form
-                    // Cerrar modal
-                    const modalEl = document.getElementById('modalCrearUsuario');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
+                    // Cerrar modal de registro primero
+                    const modalRegistro = bootstrap.Modal.getInstance(document.getElementById('modalCrearUsuario'));
+                    modalRegistro.hide();
                     
-                    listarUsuarios(); // Recargar tabla
+                    // Mostrar modal de éxito
+                    mostrarNotificacion("¡Excelente!", "Usuario creado exitosamente.", "exito");
+                    
+                    document.getElementById('formUsuario').reset(); 
+                    listarUsuarios(); 
                 } else {
-                    alert("Error al crear usuario. Verifique si el username ya existe.");
+                    mostrarNotificacion("Error", "No se pudo crear. Verifique si el username ya existe.", "error");
                 }
             } catch (error) {
                 console.error(error);
-                alert("Error de conexión");
+                mostrarNotificacion("Error de Conexión", "No se pudo conectar con el servidor.", "error");
             }
         }
 
-        // --- 3. ELIMINAR USUARIO (DELETE) ---
+        // 3. ELIMINAR
         async function eliminarUsuario(id, nombre) {
+            // Nota: Para reemplazar este confirm nativo también necesitaríamos otro modal de "Confirmación",
+            // pero por ahora mantenemos el confirm nativo para la pregunta y usamos el modal para el resultado.
             if(!confirm(`¿Está seguro de eliminar al usuario ${nombre}?`)) return;
 
             try {
-                const res = await fetch(`${API_URL}/${id}`, {
+                const res = await fetch(`http://127.0.0.1:8081/api/usuarioSistema/borrar/${id}`, {
                     method: 'DELETE'
                 });
 
                 if(res.ok) {
-                    listarUsuarios(); // Recargar tabla
+                    listarUsuarios();
+                    mostrarNotificacion("Eliminado", `El usuario ${nombre} ha sido eliminado.`, "exito");
                 } else {
-                    alert("No se pudo eliminar el usuario.");
+                    mostrarNotificacion("Error", "No se pudo eliminar el usuario.", "error");
                 }
             } catch (error) {
                 console.error(error);
-                alert("Error al intentar eliminar.");
+                mostrarNotificacion("Error", "Ocurrió un error al intentar eliminar.", "error");
             }
         }
     </script>
